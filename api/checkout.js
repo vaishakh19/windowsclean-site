@@ -19,6 +19,7 @@ module.exports = async function checkout(req, res) {
   try {
     const response = await fetch(API_BASE + '/checkouts', {
       method: 'POST',
+      redirect: 'error',
       headers: {
         Authorization: 'Bearer ' + process.env.DODO_PAYMENTS_API_KEY,
         'Content-Type': 'application/json',
