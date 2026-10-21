@@ -19,18 +19,18 @@
   <main class="wrap">
     <p><a href="/">← Back to Windows Clean</a></p>
     <h1>Privacy</h1>
-    <p>Last updated: October 21, 2026</p>
-    <div class="notice"><strong>Pre-launch notice</strong><p>Windows Clean Pro checkout is not enabled. This page describes the app’s current local scanning and license-validation behavior; complete operator contact details will be published before paid checkout is enabled.</p></div>
+    <p>Last updated: October 22, 2026</p>
+    <div class="notice"><strong>Pre-launch notice</strong><p>The website can start a Dodo Payments test checkout. Test mode does not collect a real payment. Live checkout remains disabled; complete operator contact details will be published before any live sale.</p></div>
 
     <h2>What the app does on your PC</h2>
     <p>Windows Clean scans the drive or folder you select on your Windows device. Scan history, preferences, and license state are stored in the app’s local storage. The scan results are not included in the app’s Dodo Payments license requests.</p>
 
     <h2>License activation</h2>
     <p>In a build configured for Windows Clean Pro, the app sends the license key you enter, a device label, and the license instance identifier when applicable to Dodo Payments. It uses Dodo’s public license activation and validation endpoints. The merchant API key is not included in the app.</p>
-    <p>Windows Clean Pro is not currently available for purchase from this site. If it becomes available, Dodo Payments will handle checkout and payment processing, and the checkout will identify the information it collects.</p>
+    <p>The website sends a fixed product and quantity to the Dodo test API to create checkout sessions. The Vercel backend keeps the Dodo API key and webhook secret server-side. Dodo handles checkout and payment information. A signed test entitlement webhook is checked against the Dodo payment record before a license key is issued. The backend does not receive scan contents or the app’s local files.</p>
 
     <h2>Website and third-party services</h2>
-    <p>This site links to GitHub for source code and technical support. The site does not currently offer checkout, a waitlist, or a newsletter signup.</p>
+    <p>This site links to GitHub for source code and technical support. The site offers test checkout only, and does not offer a waitlist or newsletter signup.</p>
 
     <h2>Your choices and questions</h2>
     <p>You can remove local app data by uninstalling Windows Clean and deleting its remaining app data from your Windows user profile. This also removes local scan history and saved license state.</p>
