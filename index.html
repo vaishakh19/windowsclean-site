@@ -88,8 +88,11 @@
     </section>
     <section class="content" id="pro">
       <div class="wrap">
-        <div class="sectionhead"><div class="eyebrow">Windows Clean Pro</div><h2>Paid features are being prepared.</h2><p>The planned one-time price is $12.99. No purchase is available on this website yet.</p></div>
-        <div class="notice" role="status"><div aria-hidden="true">◇</div><div><strong>Checkout is not enabled</strong><p>A Dodo Payments product and hosted checkout link have not been configured and verified for this site. There is no buy button. Pro device limits and purchase terms will be published after the merchant setup is confirmed.</p></div></div>
+        <div class="sectionhead"><div class="eyebrow">Windows Clean Pro · TEST MODE</div><h2>Try Pro with a test checkout.</h2><p>One-time test price: $12.99 USD. Test purchases do not charge real money. Dodo emails the license key after the signed payment is verified.</p></div>
+        <div class="notice" role="status"><div aria-hidden="true">◇</div><div><strong>Test payments only</strong><p>This checkout is pinned to the Dodo test environment and Windows Clean Pro test product. A successful payment is checked for the exact product, one-time purchase, and $12.99 USD amount before a permanent one-device license is delivered.</p>
+          <div class="actions"><button class="button primary" id="checkout-button" type="button">Start test checkout · $12.99</button><a class="button secondary" href="/terms.html">Purchase terms</a></div>
+          <p id="checkout-error" role="alert" hidden></p>
+        </div></div>
       </div>
     </section>
     <section class="content" id="privacy">
@@ -99,6 +102,28 @@
       </div>
     </section>
   </main>
-  <footer class="wrap"><span>© 2026 Windows Clean</span><div class="footlinks"><a href="#privacy">Privacy</a><a href="https://github.com/vaishakh19/meowchan/issues">Support</a><a href="https://github.com/vaishakh19/meowchan">Source</a></div></footer>
+  <footer class="wrap"><span>© 2026 Windows Clean · Test payments only</span><div class="footlinks"><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/contact.html">Contact</a><a href="https://github.com/vaishakh19/meowchan">Source</a></div></footer>
+  <script>
+    const checkoutButton = document.getElementById('checkout-button');
+    const checkoutError = document.getElementById('checkout-error');
+    checkoutButton?.addEventListener('click', async () => {
+      checkoutButton.disabled = true;
+      checkoutError.hidden = true;
+      try {
+        const response = await fetch('/api/checkout', { method: 'POST' });
+        const result = await response.json();
+        const checkout = new URL(result.checkoutUrl);
+        if (!response.ok || checkout.protocol !== 'https:' || checkout.hostname !== 'test.checkout.dodopayments.com') {
+          throw new Error(result.error || 'Test checkout is unavailable.');
+        }
+        location.assign(checkout.href);
+      } catch (error) {
+        checkoutError.textContent = error instanceof Error ? error.message : 'Could not start test checkout. Please try again.';
+        checkoutError.hidden = false;
+      } finally {
+        checkoutButton.disabled = false;
+      }
+    });
+  </script>
 </body>
 </html>
