@@ -28,6 +28,7 @@ async function rawBody(req) {
 async function dodo(path, method, body) {
   const response = await fetch(API_BASE + path, {
     method,
+    redirect: 'error',
     headers: {
       Authorization: 'Bearer ' + process.env.DODO_PAYMENTS_API_KEY,
       'Content-Type': 'application/json',
