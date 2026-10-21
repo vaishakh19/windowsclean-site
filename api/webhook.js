@@ -59,7 +59,7 @@ function validPayment(payment) {
 // Deterministic per-grant key: webhook retries ask Dodo to fulfill the same grant
 // with the same value, so concurrent/replayed delivery cannot mint a second key.
 function keyForGrant(grantId) {
-  const digest = createHmac('sha256', process.env.DODO_PAYMENTS_WEBHOOK_KEY)
+  const digest = createHmac('sha256', process.env.DODO_PAYMENTS_API_KEY)
     .update('windowsclean-pro:' + grantId)
     .digest('hex')
     .toUpperCase();
@@ -127,3 +127,5 @@ module.exports = async function webhook(req, res) {
     return res.status(502).json({ error: 'Webhook processing temporarily failed.' });
   }
 };
+
+module.exports._test = { validPayment, keyForGrant };
