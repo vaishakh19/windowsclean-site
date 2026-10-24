@@ -1,176 +1,147 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#090b10">
-  <meta name="description" content="WindowsClean — See what's eating your drive. Visual disk analyzer for Windows. Private, offline, blazing fast.">
-  <title>WindowsClean — Take Back Your Space</title>
-  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <meta name="theme-color" content="#0b1017">
+  <meta name="description" content="Windows Clean helps you see which files and folders use space on your Windows PC.">
+  <title>Windows Clean — See what uses your space</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    :root{
-      --bg:#090b10; --card:#10141b; --card2:#141a24; --line:#1e2633; --line2:#28313d;
-      --text:#f5f7fa; --muted:#aab4c4; --muted2:#7f8999; --cyan:#67e8f9;
-    }
-    *{box-sizing:border-box}
-    html{scroll-behavior:smooth}
-    body{margin:0; background:var(--bg); color:var(--text); font-family:"Geist",system-ui,sans-serif; -webkit-font-smoothing:antialiased; overflow-x:hidden; line-height:1.6}
-    body::before{content:""; position:fixed; inset:0; pointer-events:none; z-index:-1;
-      background:radial-gradient(800px 400px at 50% -10%, rgba(103,232,249,0.18), transparent 70%), radial-gradient(600px 600px at 85% 20%, rgba(99,102,241,0.12), transparent 60%)}
-    a{color:inherit; text-decoration:none}
-    .wrap{width:min(1120px, 92%); margin-inline:auto; position:relative; z-index:1}
-    header{position:sticky; top:0; z-index:20; height:64px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid rgba(32,36,45,0.8); backdrop-filter:blur(16px); background:rgba(9,11,16,0.7)}
-    .brand{display:flex; align-items:center; gap:10px; font-weight:800; font-size:19px; letter-spacing:-.6px}
-    .logo-mark{width:28px; height:28px; border-radius:8px; background:linear-gradient(135deg, var(--cyan), #38bdf8); display:grid; place-items:center; color:#031015; font-weight:800}
-    .brand span{color:var(--cyan)}
-    .nav{display:flex; gap:22px; align-items:center}
-    .nav a{font-size:13.5px; color:var(--muted); font-weight:500}
-    .nav a:hover{color:var(--text)}
-    .btn{display:inline-flex; align-items:center; gap:8px; border-radius:10px; font-weight:600; font-size:14px; padding:11px 18px; transition:.2s; cursor:pointer}
-    .btn-primary{background:var(--cyan); color:#061015; box-shadow:0 8px 24px rgba(103,232,249,0.22)}
-    .btn-primary:hover{transform:translateY(-1px); box-shadow:0 12px 32px rgba(103,232,249,0.28)}
-    .btn-ghost{border:1px solid var(--line2); background:rgba(255,255,255,0.03)}
-    .btn-ghost:hover{border-color:#334055; background:rgba(255,255,255,0.06)}
-    .hero{padding:108px 0 32px; text-align:center}
-    .pill{display:inline-flex; align-items:center; gap:8px; padding:6px 14px; border-radius:999px; border:1px solid rgba(103,232,249,0.22); background:linear-gradient(180deg, rgba(103,232,249,0.12), rgba(103,232,249,0.04)); color:#8ceafa; font-size:11.5px; font-weight:600; letter-spacing:.6px; text-transform:uppercase; font-family:"Geist Mono",monospace}
-    .dot-pulse{width:6px; height:6px; border-radius:50%; background:var(--cyan); box-shadow:0 0 10px var(--cyan); animation:pulse 2s infinite}
-    @keyframes pulse{0%,100%{opacity:1} 50%{opacity:.5}}
-    h1{max-width:840px; margin:28px auto 18px; font-size:clamp(42px, 8vw, 84px); line-height:0.92; letter-spacing:-4.5px; font-weight:800}
-    h1 em{font-style:normal; background:linear-gradient(180deg, #fff 30%, var(--cyan) 130%); -webkit-background-clip:text; background-clip:text; color:transparent}
-    .lead{max-width:560px; margin:0 auto; color:var(--muted); font-size:18.5px}
-    .actions{display:flex; justify-content:center; gap:12px; flex-wrap:wrap; margin:34px 0 14px}
-    .trust{margin-top:18px; display:flex; justify-content:center; gap:18px; flex-wrap:wrap; color:var(--muted2); font-size:12.5px; font-family:"Geist Mono",monospace}
-    .trust b{color:var(--muted); font-weight:500}
-    .preview-wrap{max-width:920px; margin:64px auto 0; position:relative}
-    .preview-glow{position:absolute; inset:-30px; background:radial-gradient(600px 300px at 50% 0%, rgba(103,232,249,0.22), transparent 70%); filter:blur(20px)}
-    .preview{position:relative; border-radius:18px; border:1px solid #242e3d; background:linear-gradient(180deg, #151b27, #0e131c); box-shadow:0 20px 80px rgba(0,0,0,0.6); overflow:hidden; text-align:left}
-    .preview-bar{height:46px; display:flex; align-items:center; gap:8px; padding:0 18px; border-bottom:1px solid #1f2937; background:rgba(255,255,255,0.01)}
-    .dots{display:flex; gap:7px} .dot{width:10px; height:10px; border-radius:50%}
-    .preview-title{margin-left:12px; font-size:12.5px; color:var(--muted2); font-family:"Geist Mono",monospace}
-    .preview-body{padding:22px}
-    .drive-head{display:flex; justify-content:space-between; align-items:flex-end; gap:16px; margin-bottom:18px}
-    .drive-name{font-weight:700; font-size:15px} .drive-meta{font-size:12px; color:var(--muted2); font-family:"Geist Mono",monospace}
-    .usage-bar{width:200px; height:6px; background:#1b2331; border-radius:999px; overflow:hidden; margin-top:8px}
-    .usage-fill{height:100%; width:82.7%; background:linear-gradient(90deg, var(--cyan), #38bdf8); box-shadow:0 0 12px rgba(103,232,249,0.5)}
-    .grid{display:grid; grid-template-columns:1.2fr .8fr; gap:16px}
-    .treemap{display:grid; grid-template-columns:1.5fr 1fr; grid-template-rows:90px 70px 70px; gap:8px}
-    .block{border-radius:12px; padding:12px; display:flex; flex-direction:column; justify-content:space-between; transition:.2s}
-    .block b{font-size:13px} .block span{font-size:11px; font-family:"Geist Mono",monospace; opacity:.8}
-    .b1{background:linear-gradient(135deg, rgba(103,232,249,0.22), rgba(103,232,249,0.08)); border:1px solid rgba(103,232,249,0.25); color:#aaf2ff}
-    .b2{background:linear-gradient(135deg, rgba(96,165,250,0.22), rgba(96,165,250,0.06)); border:1px solid rgba(96,165,250,0.22); color:#bfdbfe}
-    .b3{background:#1a2331; border:1px solid #253141; color:#cbd5e1}
-    .b4{background:linear-gradient(135deg, rgba(251,191,36,0.18), rgba(251,191,36,0.06)); border:1px solid rgba(251,191,36,0.18); color:#fde68a}
-    .b5{background:#161e2a; border:1px solid #253141; color:#94a3b8}
-    .file-list{border:1px solid #1f2a3a; border-radius:12px; background:rgba(0,0,0,0.2); overflow:hidden}
-    .file-row{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:11px 12px; border-bottom:1px solid #1c2736; font-size:13px}
-    .file-left{display:flex; align-items:center; gap:9px} .file-icon{width:28px; height:28px; border-radius:7px; display:grid; place-items:center; font-size:12px}
-    .file-name{max-width:150px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-weight:500}
-    .file-size{font-family:"Geist Mono",monospace; font-size:11.5px; color:var(--muted2)}
-    .scan-footer{display:flex; justify-content:space-between; align-items:center; margin-top:14px; font-family:"Geist Mono",monospace; font-size:11px; color:var(--muted2)}
-    .scan-badge{display:inline-flex; align-items:center; gap:6px; background:rgba(103,232,249,0.1); border:1px solid rgba(103,232,249,0.2); color:#8ceafa; padding:4px 8px; border-radius:999px}
-    .section{padding:72px 0; border-top:1px solid rgba(32,36,45,0.6)}
-    .eyebrow{font-family:"Geist Mono",monospace; font-size:11.5px; letter-spacing:1.2px; text-transform:uppercase; color:var(--cyan); margin-bottom:14px}
-    .h2{font-size:clamp(26px, 4vw, 40px); line-height:0.95; letter-spacing:-1.8px; font-weight:800; margin:0 0 12px}
-    .features{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:32px}
-    .feat{padding:22px; border-radius:16px; border:1px solid var(--line); background:linear-gradient(180deg, var(--card2), var(--card)); transition:.25s}
-    .feat:hover{transform:translateY(-2px); border-color:#2a374a; box-shadow:0 12px 40px rgba(0,0,0,0.3)}
-    .feat-icon{width:36px; height:36px; border-radius:10px; background:rgba(255,255,255,0.04); border:1px solid #252f3f; display:grid; place-items:center; margin-bottom:14px}
-    .feat h3{margin:0 0 6px; font-size:15.5px} .feat p{margin:0; color:var(--muted); font-size:13.5px; line-height:1.5}
-    .how{display:grid; grid-template-columns:repeat(3,1fr); gap:0; margin-top:36px}
-    .step{text-align:center; padding:0 18px}
-    .step-num{width:56px; height:56px; margin:0 auto 16px; border-radius:14px; background:linear-gradient(180deg, #1a2331, #121a27); border:1px solid #273245; display:grid; place-items:center; font-family:"Geist Mono",monospace; font-weight:700; color:var(--cyan)}
-    .step h4{margin:0 0 6px; font-size:15px} .step p{margin:0; color:var(--muted); font-size:13px}
-    .cta{padding:96px 0; text-align:center}
-    .cta-box{border-radius:24px; border:1px solid #243041; background:radial-gradient(800px 400px at 50% 0%, rgba(103,232,249,0.14), transparent 70%), linear-gradient(180deg, #141b27, #0e131c); padding:56px 24px}
-    footer{border-top:1px solid #1b2331; padding:28px 0; color:var(--muted2); font-size:12.5px; font-family:"Geist Mono",monospace; display:flex; justify-content:space-between; flex-wrap:wrap; gap:16px}
-    .reveal{animation:fadeUp .8s cubic-bezier(.2,.8,.2,1) both}
-    .reveal2{animation:fadeUp .8s .1s cubic-bezier(.2,.8,.2,1) both}
-    .reveal3{animation:fadeUp .8s .2s cubic-bezier(.2,.8,.2,1) both}
-    @keyframes fadeUp{from{opacity:0; transform:translateY(18px)} to{opacity:1; transform:translateY(0)}}
-    @media (max-width:800px){h1{letter-spacing:-2.5px} .grid{grid-template-columns:1fr} .features{grid-template-columns:1fr} .how{grid-template-columns:1fr; gap:28px} .usage-bar{width:140px}}
+    :root{color-scheme:dark;--bg:#0b1017;--surface:#111923;--surface2:#151f2b;--line:#263341;--text:#f4f7fb;--muted:#a6b2c1;--quiet:#788696;--accent:#74e3d0;--blue:#83b7ff}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(900px 520px at 72% -8%,#183746 0,transparent 62%),var(--bg);color:var(--text);font-family:"DM Sans",system-ui,sans-serif;line-height:1.6}
+    a{color:inherit;text-decoration:none}.wrap{width:min(1100px,calc(100% - 40px));margin:auto}
+    header{height:76px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #ffffff12}
+    .brand{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:800;letter-spacing:-.6px}.mark{width:30px;height:30px;display:grid;place-items:center;border-radius:9px;background:var(--accent);color:#09201d}
+    nav{display:flex;align-items:center;gap:25px;color:var(--muted);font-size:13px}nav a:hover,.footlinks a:hover{color:var(--accent)}
+    .hero{padding:92px 0 80px;display:grid;grid-template-columns:1fr .95fr;align-items:center;gap:54px}
+    .eyebrow{color:var(--accent);font:700 11px "Space Mono",monospace;letter-spacing:.12em;text-transform:uppercase}
+    h1{font-size:clamp(45px,7vw,76px);line-height:.98;letter-spacing:-.065em;margin:18px 0 20px;max-width:630px}
+    .lead{max-width:560px;color:var(--muted);font-size:18px;margin:0}
+    .actions{display:flex;flex-wrap:wrap;gap:11px;margin-top:28px}.button{display:inline-flex;align-items:center;justify-content:center;border-radius:10px;padding:12px 17px;font-size:13px;font-weight:700}
+    .primary{background:var(--accent);color:#09201d}.secondary{border:1px solid var(--line);color:var(--text)}
+    .status{margin-top:15px;color:var(--quiet);font:11px "Space Mono",monospace}
+    .visual{border:1px solid #2a3949;border-radius:18px;background:linear-gradient(145deg,#172331,#101720);padding:19px;box-shadow:0 30px 90px #0008;transform:rotate(1deg)}
+    .windowbar{display:flex;align-items:center;gap:7px;padding-bottom:14px;border-bottom:1px solid var(--line);color:var(--quiet);font:11px "Space Mono",monospace}
+    .windowbar i{width:8px;height:8px;border-radius:99px;background:#fb7185}.windowbar i:nth-child(2){background:#fbbf24}.windowbar i:nth-child(3){background:#4ade80}
+    .windowbar span{margin-left:9px}.drive{display:flex;justify-content:space-between;align-items:end;padding:20px 0 13px;font-size:13px}.drive small{color:var(--quiet);font:10px "Space Mono",monospace}
+    .tiles{display:grid;grid-template-columns:1.2fr .8fr;grid-template-rows:82px 82px 68px;gap:8px}
+    .tile{display:flex;flex-direction:column;justify-content:space-between;padding:11px;border:1px solid #ffffff14;border-radius:10px;background:#74e3d01f;color:#d8fff7;font-size:12px;font-weight:700}
+    .tile small{font:10px "Space Mono",monospace;color:#abc5c6}.tile:nth-child(2){background:#83b7ff21;color:#e5f0ff}.tile:nth-child(3){background:#bb9cff1c;color:#ebddff}.tile:nth-child(4){background:#f5c76d1a;color:#ffedc4}.tile:nth-child(5){background:#ffffff09;color:#d6dee8}
+    .tile:first-child{grid-row:span 2}.sample{display:flex;justify-content:space-between;border-top:1px solid var(--line);padding:13px 3px 1px;margin-top:13px;color:var(--quiet);font:10px "Space Mono",monospace}
+    section.content{padding:70px 0;border-top:1px solid #ffffff12}.sectionhead{max-width:610px}.sectionhead h2{font-size:clamp(28px,4vw,42px);line-height:1.07;letter-spacing:-.05em;margin:12px 0}
+    .sectionhead p{color:var(--muted);margin:0}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:31px}
+    .card{background:linear-gradient(160deg,var(--surface2),var(--surface));border:1px solid var(--line);border-radius:14px;padding:22px}
+    .icon{color:var(--accent);font-size:19px}.card h3{font-size:15px;margin:10px 0 5px}.card p{font-size:13px;color:var(--muted);margin:0}
+    .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:32px}.step{padding:17px 0;border-top:1px solid var(--line)}.step b{font:700 11px "Space Mono",monospace;color:var(--accent)}.step h3{font-size:15px;margin:8px 0 3px}.step p{color:var(--muted);font-size:13px;margin:0}
+    .notice{display:flex;gap:15px;align-items:flex-start;padding:20px;border:1px solid #d7a84b44;border-radius:14px;background:#d7a84b0c;margin-top:28px}
+    .notice strong{display:block;font-size:14px}.notice p{margin:3px 0 0;color:var(--muted);font-size:13px}
+    .download-card{display:grid;grid-template-columns:1.15fr .85fr;gap:28px;align-items:center;padding:28px;border:1px solid #74e3d055;border-radius:18px;background:linear-gradient(135deg,#173238,#111923);box-shadow:0 22px 60px #0004}.download-card h2{font-size:clamp(28px,4vw,42px);line-height:1.07;letter-spacing:-.05em;margin:10px 0}.download-card p{color:var(--muted);margin:0}.download-meta{display:flex;gap:9px;flex-wrap:wrap;margin-top:17px}.download-meta span{border:1px solid #ffffff1d;border-radius:99px;padding:5px 9px;color:var(--quiet);font:10px "Space Mono",monospace}.download-side{padding:18px;border:1px solid var(--line);border-radius:13px;background:#0b101777}.download-side p{font-size:12px}.checksum{display:inline-block;margin-top:12px;color:var(--accent);font:11px "Space Mono",monospace;word-break:break-all}.contact{margin-top:14px;font-size:13px!important}.contact a{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+    .privacy{display:grid;grid-template-columns:.8fr 1.2fr;gap:50px}.privacy p,.privacy li{color:var(--muted);font-size:13px}.privacy ul{padding-left:18px}
+    footer{padding:24px 0 34px;border-top:1px solid #ffffff12;display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap;color:var(--quiet);font:11px "Space Mono",monospace}
+    .footlinks{display:flex;gap:18px}
+    @media(max-width:780px){.hero{grid-template-columns:1fr;padding-top:64px;gap:34px}.visual{max-width:610px}.cards,.steps,.download-card{grid-template-columns:1fr}.privacy{grid-template-columns:1fr;gap:8px}nav{gap:13px}nav a:nth-child(2){display:none}}
+    @media(max-width:460px){.wrap{width:min(100% - 28px,1100px)}header{height:64px}nav{font-size:11px;gap:10px}.hero{padding:54px 0}.lead{font-size:16px}.visual{padding:12px}.tiles{grid-template-rows:72px 72px 60px}}
   </style>
 </head>
 <body>
   <header class="wrap">
-    <a class="brand" href="#"><div class="logo-mark">W</div> Windows<span>Clean</span></a>
-    <div class="nav"><a href="#features">Features</a><a href="#how">How it works</a><a class="btn btn-ghost" href="#download" style="padding:8px 14px">Download</a></div>
+    <a class="brand" href="#top" aria-label="Windows Clean home"><span class="mark" aria-hidden="true">W</span>Windows Clean</a>
+    <nav aria-label="Main navigation"><a href="#features">Features</a><a href="#how">How it works</a><a href="#pro">Pro status</a></nav>
   </header>
-  <main>
+  <main id="top">
     <section class="hero wrap">
-      <div class="pill reveal"><span class="dot-pulse"></span> Made for Windows 11 • Private by Design</div>
-      <h1 class="reveal2">Your disk. Your space.<br><em>Your control.</em></h1>
-      <p class="lead reveal2">See what's eating your drive in seconds. Visual treemap, instant search, and safe cleanup — 100% offline, no bloatware, no cloud.</p>
-      <div class="actions reveal3">
-        <a class="btn btn-primary" href="#download">Get WindowsClean — Free ↗</a>
-        <a class="btn btn-ghost" href="#features">See how it works</a>
+      <div>
+        <div class="eyebrow">WindowsClean Beta 0.1.0</div>
+        <h1>See what’s taking up your space.</h1>
+        <p class="lead">Scan a drive or folder, then explore the results with a visual map, file list, large-file search, and duplicate detection.</p>
+        <div class="actions"><a class="button primary" href="/Windows-Clean-setup.exe" download="Windows-Clean-setup.exe">Download for Windows</a><a class="button secondary" href="#features">Explore features</a></div>
+        <p class="status">Windows desktop app · x64 installer · Beta/test-mode build</p>
       </div>
-      <div class="trust reveal3"><span><b>✓</b> 100% Offline</span><span><b>✓</b> No telemetry</span><span><b>✓</b> &lt;12MB • Portable</span><span><b>✓</b> Windows 10/11</span></div>
-
-      <div class="preview-wrap reveal3">
-        <div class="preview-glow"></div>
-        <div class="preview">
-          <div class="preview-bar">
-            <div class="dots"><span class="dot" style="background:#ff5f57"></span><span class="dot" style="background:#ffbd2e"></span><span class="dot" style="background:#28c840"></span></div>
-            <div class="preview-title">Storage overview — Local Disk (C:)</div>
-            <div style="margin-left:auto; display:flex; gap:6px"><span style="width:56px; height:22px; border-radius:6px; background:#1b2331"></span><span style="width:68px; height:22px; border-radius:6px; background:#67e8f9"></span></div>
-          </div>
-          <div class="preview-body">
-            <div class="drive-head">
-              <div><div class="drive-name">Local Disk (C:) • NVMe</div><div class="drive-meta">NTFS • 512 GB • Healthy</div></div>
-              <div style="text-align:right"><div style="font-weight:700; font-size:13.5px">423.8 GB used</div><div class="usage-bar"><div class="usage-fill"></div></div></div>
-            </div>
-            <div class="grid">
-              <div class="treemap">
-                <div class="block b1" style="grid-row:span 2"><b>Games</b><span>122.4 GB • 847 files</span><span style="margin-top:auto; font-size:20px; opacity:.6">▤</span></div>
-                <div class="block b2"><b>Downloads</b><span>84.2 GB</span></div>
-                <div class="block b3"><b>System & Cache</b><span>38.1 GB</span></div>
-                <div class="block b4"><b>Temp & Logs</b><span>31.2 GB • Cleanable</span></div>
-                <div class="block b5"><b>Projects</b><span>18.4 GB</span></div>
-              </div>
-              <div class="file-list">
-                <div class="file-row"><div class="file-left"><div class="file-icon" style="background:rgba(103,232,249,0.15)">.iso</div><div class="file-name">Call.of.Duty.MW3.iso</div></div><div class="file-size">84.2 GB</div></div>
-                <div class="file-row"><div class="file-left"><div class="file-icon" style="background:rgba(251,191,36,0.14)">◍</div><div class="file-name">【entity-Adobe¦canonical_name=Adobe】 Media Cache</div></div><div class="file-size">31.2 GB</div></div>
-                <div class="file-row"><div class="file-left"><div class="file-icon" style="background:rgba(96,165,250,0.15)">⧉</div><div class="file-name">node_modules • 3 projects</div></div><div class="file-size">18.4 GB</div></div>
-                <div class="file-row"><div class="file-left"><div class="file-icon" style="background:rgba(168,85,247,0.15)">▶</div><div class="file-name">OBS Recordings</div></div><div class="file-size">12.7 GB</div></div>
-                <div class="file-row"><div class="file-left"><div class="file-icon" style="background:rgba(255,255,255,0.06)">⎙</div><div class="file-name">Windows.old</div></div><div class="file-size">9.3 GB</div></div>
-              </div>
-            </div>
-            <div class="scan-footer"><span class="scan-badge"><span style="width:6px; height:6px; background:#22c55e; border-radius:50%; display:inline-block"></span> Scanned in 1.24s • 1,847 files</span><span>Illustrative preview — not live disk data</span></div>
-          </div>
+      <div class="visual" role="img" aria-label="Illustrative Windows Clean storage map with example folders">
+        <div class="windowbar"><i></i><i></i><i></i><span>Storage overview · illustrative example</span></div>
+        <div class="drive"><strong>Selected folder</strong><small>Example view · sample data</small></div>
+        <div class="tiles"><div class="tile">Projects<small>Largest folder</small></div><div class="tile">Videos<small>Large files</small></div><div class="tile">Downloads<small>Browse contents</small></div><div class="tile">Pictures<small>Explore folders</small></div><div class="tile">Documents<small>Compare sizes</small></div></div>
+        <div class="sample"><span>Illustration only</span><span>Not a live scan</span></div>
+      </div>
+    </section>
+    <section class="content" id="download">
+      <div class="wrap download-card">
+        <div>
+          <div class="eyebrow">Early tester download</div>
+          <h2>WindowsClean Beta for Windows</h2>
+          <p>Download the direct installer to test desktop installation, cleanup features, and license activation. This is a beta build using Dodo Payments test mode—test purchases do not charge real money and are not production purchases.</p>
+          <div class="download-meta"><span>Version 0.1.0</span><span>3.14 MB installer</span><span>Windows x64</span></div>
+          <div class="actions"><a class="button primary" href="/Windows-Clean-setup.exe" download="Windows-Clean-setup.exe">Download for Windows</a><a class="button secondary" href="/Windows-Clean-setup.exe.sha256">SHA-256 checksum</a></div>
+        </div>
+        <aside class="download-side" aria-label="Beta download verification">
+          <strong>Verify your download</strong>
+          <p>Installer filename: <code>Windows-Clean-setup.exe</code></p>
+          <a class="checksum" href="/Windows-Clean-setup.exe.sha256">d2bdabfdbfd2a9dc31fa29be0f5f5db7f405a6f982f5327052bf7faea71b9476</a>
+          <p class="contact">Feedback or installation issues: <a href="mailto:vaishakhdesktop@gmail.com">vaishakhdesktop@gmail.com</a></p>
+        </aside>
+      </div>
+    </section>
+    <section class="content" id="features">
+      <div class="wrap">
+        <div class="sectionhead"><div class="eyebrow">Explore your scan</div><h2>Understand the space before you decide what to do.</h2><p>Windows Clean focuses on helping you inspect storage. Scanning and file exploration are available without Pro.</p></div>
+        <div class="cards">
+          <article class="card"><div class="icon" aria-hidden="true">▤</div><h3>Visual folder maps</h3><p>Switch between sunburst and treemap views to spot large folders and drill into scan results.</p></article>
+          <article class="card"><div class="icon" aria-hidden="true">⌕</div><h3>Search large files</h3><p>Filter large-file results by size, extension, and age, then review the matching file list.</p></article>
+          <article class="card"><div class="icon" aria-hidden="true">⧉</div><h3>Find duplicate content</h3><p>Compare files by content hash and inspect duplicate groups in the scan results.</p></article>
         </div>
       </div>
     </section>
-
-    <section class="section wrap" id="features">
-      <div class="eyebrow">Why WindowsClean</div>
-      <h2 class="h2">Built for people who care about their PC.</h2>
-      <div class="features">
-        <article class="feat"><div class="feat-icon">⌕</div><h3>Find large files in seconds</h3><p>Instant indexing with Rust-powered scan. Sort by size, age, type. No waiting, no spinner.</p></article>
-        <article class="feat"><div class="feat-icon">▤</div><h3>Visual treemap you get</h3><p>See your drive as blocks. Bigger block = more space. Click to drill down. Like Explorer, but smart.</p></article>
-        <article class="feat"><div class="feat-icon">✦</div><h3>Clean with care</h3><p>We never auto-delete. You review, we move to Recycle Bin. Temp files, caches, duplicates — your call.</p></article>
+    <section class="content" id="how">
+      <div class="wrap">
+        <div class="sectionhead"><div class="eyebrow">How it works</div><h2>Scan, explore, make your own call.</h2><p>Windows Clean shows what a scan found; you stay in control of what happens next.</p></div>
+        <div class="steps">
+          <article class="step"><b>01</b><h3>Choose a drive or folder</h3><p>Start a scan on the location you want to understand.</p></article>
+          <article class="step"><b>02</b><h3>Explore the results</h3><p>Use the visual maps, file list, large-file search, and duplicate groups.</p></article>
+          <article class="step"><b>03</b><h3>Review before acting</h3><p>The free edition is for scanning and inspection. Pro file actions require a configured Pro license.</p></article>
+        </div>
       </div>
     </section>
-
-    <section class="section wrap" id="how">
-      <div class="eyebrow">How it works</div>
-      <h2 class="h2">Three clicks to clarity.</h2>
-      <div class="how">
-        <div class="step"><div class="step-num">01</div><h4>Open & scan</h4><p>Launch — it auto-detects C:, D:. Scan finishes before you blink.</p></div>
-        <div class="step"><div class="step-num">02</div><h4>Explore</h4><p>Treemap + file list. Hover to preview, right-click to open in Explorer.</p></div>
-        <div class="step"><div class="step-num">03</div><h4>Reclaim</h4><p>Select safe targets, review size, clean to Recycle Bin. Undo anytime.</p></div>
+    <section class="content" id="pro">
+      <div class="wrap">
+        <div class="sectionhead"><div class="eyebrow">Windows Clean Pro · TEST MODE</div><h2>Try Pro with a test checkout.</h2><p>One-time test price: $12.99 USD. Test purchases do not charge real money. Dodo emails the license key after the signed payment is verified.</p></div>
+        <div class="notice" role="status"><div aria-hidden="true">◇</div><div><strong>Test payments only</strong><p>This checkout is pinned to the Dodo test environment and Windows Clean Pro test product. A successful payment is checked for the exact product, one-time purchase, and $12.99 USD amount before a permanent one-device license is delivered.</p>
+          <div class="actions"><button class="button primary" id="checkout-button" type="button">Start test checkout · $12.99</button><a class="button secondary" href="/terms.html">Purchase terms</a></div>
+          <p id="checkout-error" role="alert" hidden></p>
+        </div></div>
       </div>
     </section>
-
-    <section class="cta wrap" id="download">
-      <div class="cta-box">
-        <div class="eyebrow" style="display:flex; justify-content:center">Coming Winter 2026</div>
-        <h2 class="h2" style="max-width:600px; margin:10px auto">More room for what matters.</h2>
-        <p style="color:var(--muted); max-width:500px; margin:10px auto 26px">Free for personal use. Portable .exe, no installer, no admin needed for scan.</p>
-        <div class="actions" style="margin-top:0"><a class="btn btn-primary" href="#">Join waitlist — Get notified</a><a class="btn btn-ghost" href="#">View changelog</a></div>
-        <div class="trust" style="margin-top:18px"><span>Windows 10/11 • x64 • Signed binary</span></div>
+    <section class="content" id="privacy">
+      <div class="wrap privacy">
+        <div class="sectionhead"><div class="eyebrow">Privacy summary</div><h2>Your scan stays on your PC.</h2></div>
+        <div><p>Windows Clean scans files on your Windows device and keeps scan history, preferences, and license state in local app storage. The app does not send scan contents to Dodo Payments.</p><p>If you activate a Pro license in a configured build, Windows Clean sends the license key and a device label to Dodo Payments to activate or validate that license. The website offers Dodo test checkout only; live sales are disabled. Checkout session creation and payment verification run on the Windows Clean Vercel backend.</p><p>For technical help, use the <a href="https://github.com/vaishakh19/meowchan/issues">Windows Clean issue tracker</a>. Please don’t post license keys or private information in a public issue. A private privacy contact and complete live purchase terms must be published before live checkout is enabled.</p></div>
       </div>
     </section>
   </main>
-  <footer class="wrap"><div>© 2026 WindowsClean • Windows desktop software</div><div style="display:flex; gap:18px"><a href="#">Privacy: 100% local</a><a href="#">Contact</a></div></footer>
+  <footer class="wrap"><span>© 2026 Windows Clean · Test payments only</span><div class="footlinks"><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/contact.html">Contact</a><a href="https://github.com/vaishakh19/meowchan">Source</a></div></footer>
+  <script>
+    const checkoutButton = document.getElementById('checkout-button');
+    const checkoutError = document.getElementById('checkout-error');
+    checkoutButton?.addEventListener('click', async () => {
+      checkoutButton.disabled = true;
+      checkoutError.hidden = true;
+      try {
+        const response = await fetch('/api/checkout', { method: 'POST' });
+        const result = await response.json();
+        const checkout = new URL(result.checkoutUrl);
+        if (!response.ok || checkout.protocol !== 'https:' || checkout.hostname !== 'test.checkout.dodopayments.com') {
+          throw new Error(result.error || 'Test checkout is unavailable.');
+        }
+        location.assign(checkout.href);
+      } catch (error) {
+        checkoutError.textContent = error instanceof Error ? error.message : 'Could not start test checkout. Please try again.';
+        checkoutError.hidden = false;
+      } finally {
+        checkoutButton.disabled = false;
+      }
+    });
+  </script>
 </body>
 </html>
