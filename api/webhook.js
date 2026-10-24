@@ -67,6 +67,31 @@ function keyForGrant(grantId) {
   return 'WC1-' + digest.match(/.{1,5}/g).slice(0, 5).join('-');
 }
 
+async function fulfillPendingGrant(grant) {
+  const paymentResponse = await dodo('/payments/' + encodeURIComponent(grant.payment_id), 'GET');
+  if (!paymentResponse.ok) {
+    console.error('Could not verify Dodo payment; retrying webhook.');
+    return { status: 502, body: { error: 'Payment verification temporarily failed.' } };
+  }
+  const payment = await paymentResponse.json();
+  if (!validPayment(payment)) {
+    console.error('Dodo payment did not match Windows Clean Pro test terms.');
+    return { status: 200, body: { received: true, fulfilled: false } };
+  }
+
+  const result = await dodo('/grants/' + encodeURIComponent(grant.id) + '/license-key', 'POST', {
+    key: keyForGrant(grant.id),
+    activations_limit: 1,
+  });
+  // A replay after a successful fulfillment receives a conflict from Dodo.
+  // The same deterministic key is used for every delivery of this grant.
+  if (result.ok || result.status === 409) {
+    return { status: 200, body: { received: true, fulfilled: true } };
+  }
+  console.error('Dodo grant fulfillment failed with status', result.status);
+  return { status: 502, body: { error: 'License delivery temporarily failed.' } };
+}
+
 module.exports = async function webhook(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   if (req.method !== 'POST') {
@@ -101,32 +126,12 @@ module.exports = async function webhook(req, res) {
   }
 
   try {
-    const paymentResponse = await dodo('/payments/' + encodeURIComponent(grant.payment_id), 'GET');
-    if (!paymentResponse.ok) {
-      console.error('Could not verify Dodo payment; retrying webhook.');
-      return res.status(502).json({ error: 'Payment verification temporarily failed.' });
-    }
-    const payment = await paymentResponse.json();
-    if (!validPayment(payment)) {
-      console.error('Dodo payment did not match Windows Clean Pro test terms.');
-      return res.status(200).json({ received: true, fulfilled: false });
-    }
-
-    const result = await dodo('/grants/' + encodeURIComponent(grant.id) + '/license-key', 'POST', {
-      key: keyForGrant(grant.id),
-      activations_limit: 1,
-    });
-    // A replay after a successful fulfillment receives a conflict from Dodo.
-    // The same deterministic key is used for every delivery of this grant.
-    if (result.ok || result.status === 409) {
-      return res.status(200).json({ received: true, fulfilled: true });
-    }
-    console.error('Dodo grant fulfillment failed with status', result.status);
-    return res.status(502).json({ error: 'License delivery temporarily failed.' });
+    const outcome = await fulfillPendingGrant(grant);
+    return res.status(outcome.status).json(outcome.body);
   } catch (error) {
     console.error('Dodo webhook processing failed:', error && error.name);
     return res.status(502).json({ error: 'Webhook processing temporarily failed.' });
   }
 };
 
-module.exports._test = { validPayment, keyForGrant };
+module.exports._test = { validPayment, keyForGrant, fulfillPendingGrant };

@@ -2,5 +2,15 @@
   "functions": {
     "api/checkout.js": { "maxDuration": 15 },
     "api/webhook.js": { "maxDuration": 30 }
-  }
+  },
+  "headers": [
+    {
+      "source": "/Windows-Clean-setup.exe",
+      "headers": [
+        { "key": "Content-Type", "value": "application/x-msdownload" },
+        { "key": "Content-Disposition", "value": "attachment; filename=Windows-Clean-setup.exe" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" }
+      ]
+    }
+  ]
 }
