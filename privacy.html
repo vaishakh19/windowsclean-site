@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1017">
+  <meta name="description" content="Windows Clean privacy information.">
+  <title>Privacy — Windows Clean</title>
+  <style>
+    :root{color-scheme:dark;--bg:#0b1017;--panel:#111923;--line:#263341;--text:#f4f7fb;--muted:#a6b2c1;--accent:#74e3d0}
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(850px 440px at 70% -10%,#183746,transparent 65%),var(--bg);color:var(--text);font:16px/1.7 system-ui,sans-serif}
+    a{color:var(--accent)}.wrap{width:min(760px,calc(100% - 36px));margin:auto}header{padding:24px 0;border-bottom:1px solid #ffffff16}.brand{color:var(--text);font-weight:800;text-decoration:none}
+    main{padding:50px 0 80px}h1{font-size:42px;line-height:1.05;letter-spacing:-.05em}h2{font-size:19px;margin-top:34px}p,li{color:var(--muted)}.notice{border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:16px}
+    footer{padding:20px 0;border-top:1px solid #ffffff16;color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+  <header><div class="wrap"><a class="brand" href="/">Windows Clean</a></div></header>
+  <main class="wrap">
+    <p><a href="/">← Back to Windows Clean</a></p>
+    <h1>Privacy</h1>
+    <p>Last updated: October 25, 2026</p>
+    <div class="notice"><strong>Checkout privacy</strong><p>Dodo Payments handles checkout and payment information as the merchant of record. Windows Clean does not receive card or payment-account details.</p></div>
+
+    <h2>What the app does on your PC</h2>
+    <p>Windows Clean scans the drive or folder you select on your Windows device. Scan history, preferences, and license state are stored in the app’s local storage. The scan results are not included in the app’s Dodo Payments license requests.</p>
+
+    <h2>License activation</h2>
+    <p>In a build configured for Windows Clean Pro, the app sends the license key you enter, a device label, and the license instance identifier when applicable to Dodo Payments. It uses Dodo’s public license activation and validation endpoints. The merchant API key is not included in the app.</p>
+    <p>The website sends a fixed product and quantity to Dodo Payments to create checkout sessions. The Vercel backend keeps the Dodo API key and webhook secret server-side. A signed entitlement webhook is checked against the payment record before a license key is issued. The backend does not receive scan contents or the app’s local files.</p>
+
+    <h2>Website and third-party services</h2>
+    <p>This site links to GitHub for source code and technical support. It does not offer a waitlist or newsletter signup.</p>
+
+    <h2>Your choices and questions</h2>
+    <p>You can remove local app data by uninstalling Windows Clean and deleting its remaining app data from your Windows user profile. This also removes local scan history and saved license state.</p>
+    <p>For technical support, use the <a href="https://github.com/vaishakh19/meowchan/issues">Windows Clean issue tracker</a>. Do not post a license key or other private information in a public issue. For privacy requests, contact <a href="mailto:vaishakhdesktop@gmail.com">vaishakhdesktop@gmail.com</a>.</p>
+  </main>
+  <footer><div class="wrap">Windows Clean · <a href="/terms.html">Terms and product status</a> · <a href="/contact.html">Contact</a></div></footer>
+</body>
+</html>
