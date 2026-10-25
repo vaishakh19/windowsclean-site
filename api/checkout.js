@@ -1,11 +1,16 @@
-const PRODUCT_ID = 'pdt_0NqEVSM3FguQk894qafle';
-const API_BASE = 'https://test.dodopayments.com';
 const SITE = 'https://windowsclean.space';
 
-function ready() {
-  return process.env.DODO_ENVIRONMENT === 'test'
-    && process.env.DODO_PRODUCT_ID === PRODUCT_ID
-    && Boolean(process.env.DODO_PAYMENTS_API_KEY);
+function config() {
+  const environment = process.env.DODO_ENVIRONMENT;
+  const live = environment === 'live' || environment === 'live_mode';
+  if (!(environment === 'test' || live)
+      || !/^pdt_[A-Za-z0-9]+$/.test(process.env.DODO_PRODUCT_ID || '')
+      || !process.env.DODO_PAYMENTS_API_KEY) return null;
+  return {
+    productId: process.env.DODO_PRODUCT_ID,
+    apiBase: live ? 'https://live.dodopayments.com' : 'https://test.dodopayments.com',
+    checkoutHost: live ? 'checkout.dodopayments.com' : 'test.checkout.dodopayments.com',
+  };
 }
 
 module.exports = async function checkout(req, res) {
@@ -14,10 +19,11 @@ module.exports = async function checkout(req, res) {
     res.setHeader('Allow', 'POST');
     return res.status(405).json({ error: 'Method not allowed.' });
   }
-  if (!ready()) return res.status(503).json({ error: 'Test checkout is not configured.' });
+  const dodo = config();
+  if (!dodo) return res.status(503).json({ error: 'Checkout is not configured.' });
 
   try {
-    const response = await fetch(API_BASE + '/checkouts', {
+    const response = await fetch(dodo.apiBase + '/checkouts', {
       method: 'POST',
       redirect: 'error',
       headers: {
@@ -25,7 +31,7 @@ module.exports = async function checkout(req, res) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        product_cart: [{ product_id: PRODUCT_ID, quantity: 1 }],
+        product_cart: [{ product_id: dodo.productId, quantity: 1 }],
         return_url: SITE + '/success.html',
         cancel_url: SITE + '/cancel.html',
       }),
@@ -38,8 +44,8 @@ module.exports = async function checkout(req, res) {
     const session = await response.json();
     let url;
     try { url = new URL(session.checkout_url); } catch { url = null; }
-    if (!url || url.protocol !== 'https:' || url.hostname !== 'test.checkout.dodopayments.com') {
-      console.error('Dodo returned a checkout URL outside the test host.');
+    if (!url || url.protocol !== 'https:' || url.hostname !== dodo.checkoutHost) {
+      console.error('Dodo returned a checkout URL outside the configured host.');
       return res.status(502).json({ error: 'Checkout is temporarily unavailable.' });
     }
     return res.status(200).json({ checkoutUrl: url.href });
@@ -48,3 +54,5 @@ module.exports = async function checkout(req, res) {
     return res.status(502).json({ error: 'Could not start checkout. Please try again.' });
   }
 };
+
+module.exports._test = { config };

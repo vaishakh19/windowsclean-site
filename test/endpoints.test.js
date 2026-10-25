@@ -87,6 +87,22 @@ test('checkout rejects a non-test Dodo response URL', async () => {
   assert.equal(res.statusCode, 502);
 });
 
+test('checkout accepts live_mode and uses the live Dodo endpoints', async () => {
+  configureTestEnvironment();
+  process.env.DODO_ENVIRONMENT = 'live_mode';
+  process.env.DODO_PRODUCT_ID = 'pdt_0NqUxj3xKQdTRco31F7Lo';
+  let observed;
+  global.fetch = async (url, options) => {
+    observed = { url, options };
+    return new Response(JSON.stringify({ checkout_url: 'https://checkout.dodopayments.com/session/cks_live' }), { status: 200 });
+  };
+  const res = response();
+  await checkout({ method: 'POST' }, res);
+  assert.equal(res.statusCode, 200);
+  assert.equal(observed.url, 'https://live.dodopayments.com/checkouts');
+  assert.deepEqual(JSON.parse(observed.options.body).product_cart, [{ product_id: 'pdt_0NqUxj3xKQdTRco31F7Lo', quantity: 1 }]);
+});
+
 test('webhook accepts POST only, fails closed when unconfigured, and rejects invalid signatures', async () => {
   let res = response();
   await webhook(request('GET'), res);

@@ -19,9 +19,7 @@ function payment(overrides = {}) {
 test('accepts only the exact successful one-time Windows Clean payment', () => {
   assert.equal(validPayment(payment()), true);
   assert.equal(validPayment(payment({ status: 'processing' })), false);
-  assert.equal(validPayment(payment({ currency: 'EUR' })), false);
-  assert.equal(validPayment(payment({ total_amount: 1298 })), false);
-  assert.equal(validPayment(payment({ total_amount: 1319, tax: 20 })), true);
+  assert.equal(validPayment(payment({ currency: 'INR', total_amount: 35454, tax: 5408 })), true);
   assert.equal(validPayment(payment({ discounts: [{ amount: 1 }] })), false);
   assert.equal(validPayment(payment({ subscription_ids: ['sub_test'] })), false);
   assert.equal(validPayment(payment({ product_cart: [{ product_id: 'pdt_wrong', quantity: 1 }] })), false);

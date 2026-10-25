@@ -58,7 +58,7 @@
         <h1>See what’s taking up your space.</h1>
         <p class="lead">Scan a drive or folder, then explore the results with a visual map, file list, large-file search, and duplicate detection.</p>
         <div class="actions"><a class="button primary" href="/Windows-Clean-setup.exe" download="Windows-Clean-setup.exe">Download for Windows</a><a class="button secondary" href="#features">Explore features</a></div>
-        <p class="status">Windows desktop app · x64 installer · Beta/test-mode build</p>
+        <p class="status">Windows desktop app · x64 installer · Beta build</p>
       </div>
       <div class="visual" role="img" aria-label="Illustrative Windows Clean storage map with example folders">
         <div class="windowbar"><i></i><i></i><i></i><span>Storage overview · illustrative example</span></div>
@@ -72,7 +72,7 @@
         <div>
           <div class="eyebrow">Early tester download</div>
           <h2>WindowsClean Beta for Windows</h2>
-          <p>Download the direct installer to test desktop installation, cleanup features, and license activation. This is a beta build using Dodo Payments test mode—test purchases do not charge real money and are not production purchases.</p>
+          <p>Download the direct installer to try Windows Clean’s storage-inspection features and license activation.</p>
           <div class="download-meta"><span>Version 0.1.0</span><span>3.14 MB installer</span><span>Windows x64</span></div>
           <div class="actions"><a class="button primary" href="/Windows-Clean-setup.exe" download="Windows-Clean-setup.exe">Download for Windows</a><a class="button secondary" href="/Windows-Clean-setup.exe.sha256">SHA-256 checksum</a></div>
         </div>
@@ -106,9 +106,9 @@
     </section>
     <section class="content" id="pro">
       <div class="wrap">
-        <div class="sectionhead"><div class="eyebrow">Windows Clean Pro · TEST MODE</div><h2>Try Pro with a test checkout.</h2><p>One-time test price: $12.99 USD. Test purchases do not charge real money. Dodo emails the license key after the signed payment is verified.</p></div>
-        <div class="notice" role="status"><div aria-hidden="true">◇</div><div><strong>Test payments only</strong><p>This checkout is pinned to the Dodo test environment and Windows Clean Pro test product. A successful payment is checked for the exact product, one-time purchase, and $12.99 USD amount before a permanent one-device license is delivered.</p>
-          <div class="actions"><button class="button primary" id="checkout-button" type="button">Start test checkout · $12.99</button><a class="button secondary" href="/terms.html">Purchase terms</a></div>
+        <div class="sectionhead"><div class="eyebrow">Windows Clean Pro</div><h2>Unlock Pro with a secure checkout.</h2><p>One-time purchase. Your local price and applicable taxes are shown by Dodo Payments before you pay.</p></div>
+        <div class="notice" role="status"><div aria-hidden="true">◇</div><div><strong>One-device license</strong><p>A successful payment is verified server-side before Dodo delivers a permanent Windows Clean Pro license key by email.</p>
+          <div class="actions"><button class="button primary" id="checkout-button" type="button">Buy Windows Clean Pro</button><a class="button secondary" href="/terms.html">Purchase terms</a></div>
           <p id="checkout-error" role="alert" hidden></p>
         </div></div>
       </div>
@@ -116,11 +116,11 @@
     <section class="content" id="privacy">
       <div class="wrap privacy">
         <div class="sectionhead"><div class="eyebrow">Privacy summary</div><h2>Your scan stays on your PC.</h2></div>
-        <div><p>Windows Clean scans files on your Windows device and keeps scan history, preferences, and license state in local app storage. The app does not send scan contents to Dodo Payments.</p><p>If you activate a Pro license in a configured build, Windows Clean sends the license key and a device label to Dodo Payments to activate or validate that license. The website offers Dodo test checkout only; live sales are disabled. Checkout session creation and payment verification run on the Windows Clean Vercel backend.</p><p>For technical help, use the <a href="https://github.com/vaishakh19/meowchan/issues">Windows Clean issue tracker</a>. Please don’t post license keys or private information in a public issue. A private privacy contact and complete live purchase terms must be published before live checkout is enabled.</p></div>
+        <div><p>Windows Clean scans files on your Windows device and keeps scan history, preferences, and license state in local app storage. The app does not send scan contents to Dodo Payments.</p><p>If you activate a Pro license in a configured build, the app sends the license key and a device label to Dodo Payments to activate or validate that license. Checkout session creation and payment verification run on the Windows Clean Vercel backend.</p><p>For technical help, use <a href="mailto:vaishakhdesktop@gmail.com">vaishakhdesktop@gmail.com</a>. Do not send license keys or private information in a public issue.</p></div>
       </div>
     </section>
   </main>
-  <footer class="wrap"><span>© 2026 Windows Clean · Test payments only</span><div class="footlinks"><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/contact.html">Contact</a><a href="https://github.com/vaishakh19/meowchan">Source</a></div></footer>
+  <footer class="wrap"><span>© 2026 Windows Clean</span><div class="footlinks"><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/contact.html">Contact</a><a href="https://github.com/vaishakh19/meowchan">Source</a></div></footer>
   <script>
     const checkoutButton = document.getElementById('checkout-button');
     const checkoutError = document.getElementById('checkout-error');
@@ -131,12 +131,12 @@
         const response = await fetch('/api/checkout', { method: 'POST' });
         const result = await response.json();
         const checkout = new URL(result.checkoutUrl);
-        if (!response.ok || checkout.protocol !== 'https:' || checkout.hostname !== 'test.checkout.dodopayments.com') {
-          throw new Error(result.error || 'Test checkout is unavailable.');
+        if (!response.ok || checkout.protocol !== 'https:' || !['checkout.dodopayments.com', 'test.checkout.dodopayments.com'].includes(checkout.hostname)) {
+          throw new Error(result.error || 'Checkout is unavailable.');
         }
         location.assign(checkout.href);
       } catch (error) {
-        checkoutError.textContent = error instanceof Error ? error.message : 'Could not start test checkout. Please try again.';
+        checkoutError.textContent = error instanceof Error ? error.message : 'Could not start checkout. Please try again.';
         checkoutError.hidden = false;
       } finally {
         checkoutButton.disabled = false;

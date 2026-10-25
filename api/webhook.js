@@ -1,17 +1,21 @@
 const { Webhook } = require('standardwebhooks');
 const { createHmac } = require('node:crypto');
 
-const PRODUCT_ID = 'pdt_0NqEVSM3FguQk894qafle';
-const API_BASE = 'https://test.dodopayments.com';
-
 module.exports.config = { api: { bodyParser: false } };
 
-function ready() {
-  return process.env.DODO_ENVIRONMENT === 'test'
-    && process.env.DODO_PRODUCT_ID === PRODUCT_ID
-    && Boolean(process.env.DODO_PAYMENTS_API_KEY)
-    && Boolean(process.env.DODO_PAYMENTS_WEBHOOK_KEY)
-    && Boolean(process.env.DODO_LICENSE_ENTITLEMENT_ID);
+function config() {
+  const environment = process.env.DODO_ENVIRONMENT;
+  const isTest = environment === 'test';
+  const live = environment === 'live' || environment === 'live_mode';
+  if (!(isTest || live)
+    || !/^pdt_[A-Za-z0-9]+$/.test(process.env.DODO_PRODUCT_ID || '')
+    || !process.env.DODO_PAYMENTS_API_KEY
+    || !process.env.DODO_PAYMENTS_WEBHOOK_KEY
+    || !process.env.DODO_LICENSE_ENTITLEMENT_ID) return null;
+  return {
+    productId: process.env.DODO_PRODUCT_ID,
+    apiBase: live ? 'https://live.dodopayments.com' : 'https://test.dodopayments.com',
+  };
 }
 
 async function rawBody(req) {
@@ -25,8 +29,8 @@ async function rawBody(req) {
   return Buffer.concat(chunks).toString('utf8');
 }
 
-async function dodo(path, method, body) {
-  const response = await fetch(API_BASE + path, {
+async function dodo(base, path, method, body) {
+  const response = await fetch(base + path, {
     method,
     redirect: 'error',
     headers: {
@@ -39,21 +43,18 @@ async function dodo(path, method, body) {
   return response;
 }
 
-function validPayment(payment) {
+function validPayment(payment, dodoConfig = { productId: 'pdt_0NqEVSM3FguQk894qafle' }) {
   const cart = payment && payment.product_cart;
-  const tax = Number(payment && payment.tax || 0);
   const discount = Array.isArray(payment && payment.discounts) ? payment.discounts : [];
   return payment
     && payment.status === 'succeeded'
-    && payment.currency === 'USD'
-    && payment.total_amount - tax === 1299
     && discount.length === 0
     && Array.isArray(payment.subscription_ids)
     && payment.subscription_ids.length === 0
     && payment.subscription_id == null
     && Array.isArray(cart)
     && cart.length === 1
-    && cart[0].product_id === PRODUCT_ID
+    && cart[0].product_id === dodoConfig.productId
     && cart[0].quantity === 1;
 }
 
@@ -67,19 +68,21 @@ function keyForGrant(grantId) {
   return 'WC1-' + digest.match(/.{1,5}/g).slice(0, 5).join('-');
 }
 
-async function fulfillPendingGrant(grant) {
-  const paymentResponse = await dodo('/payments/' + encodeURIComponent(grant.payment_id), 'GET');
+async function fulfillPendingGrant(grant, dodoConfig) {
+  const activeConfig = dodoConfig || config();
+  if (!activeConfig) return { status: 503, body: { error: 'Webhook is not configured.' } };
+  const paymentResponse = await dodo(activeConfig.apiBase, '/payments/' + encodeURIComponent(grant.payment_id), 'GET');
   if (!paymentResponse.ok) {
     console.error('Could not verify Dodo payment; retrying webhook.');
     return { status: 502, body: { error: 'Payment verification temporarily failed.' } };
   }
   const payment = await paymentResponse.json();
-  if (!validPayment(payment)) {
-    console.error('Dodo payment did not match Windows Clean Pro test terms.');
+  if (!validPayment(payment, activeConfig)) {
+    console.error('Dodo payment did not match configured Windows Clean Pro terms.');
     return { status: 200, body: { received: true, fulfilled: false } };
   }
 
-  const result = await dodo('/grants/' + encodeURIComponent(grant.id) + '/license-key', 'POST', {
+  const result = await dodo(activeConfig.apiBase, '/grants/' + encodeURIComponent(grant.id) + '/license-key', 'POST', {
     key: keyForGrant(grant.id),
     activations_limit: 1,
   });
@@ -98,7 +101,8 @@ module.exports = async function webhook(req, res) {
     res.setHeader('Allow', 'POST');
     return res.status(405).json({ error: 'Method not allowed.' });
   }
-  if (!ready()) return res.status(503).json({ error: 'Webhook is not configured.' });
+  const dodoConfig = config();
+  if (!dodoConfig) return res.status(503).json({ error: 'Webhook is not configured.' });
 
   let event;
   try {
@@ -126,7 +130,7 @@ module.exports = async function webhook(req, res) {
   }
 
   try {
-    const outcome = await fulfillPendingGrant(grant);
+    const outcome = await fulfillPendingGrant(grant, dodoConfig);
     return res.status(outcome.status).json(outcome.body);
   } catch (error) {
     console.error('Dodo webhook processing failed:', error && error.name);
@@ -134,4 +138,4 @@ module.exports = async function webhook(req, res) {
   }
 };
 
-module.exports._test = { validPayment, keyForGrant, fulfillPendingGrant };
+module.exports._test = { config, validPayment, keyForGrant, fulfillPendingGrant };
