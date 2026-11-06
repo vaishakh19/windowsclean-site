@@ -1,0 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #FAF7F3;
+  --bg-2: #F2EFE9;
+  --ink: #18181B;
+  --ink-soft: #52525B;
+  --ink-faint: #A1A1AA;
+  --line: #E7E0D6;
+  --accent: #B7D485;
+  --accent-ink: #18181B;
+  --pill-green: #C5E49A;
+  --pill-yellow: #F5E6A0;
+  --pill-clay: #E8B4A0;
+  --pill-blue: #A8CBE6;
+  --card: #FFFFFF;
+  --shadow: 0 8px 32px rgba(24,24,27,0.06), 0 2px 8px rgba(24,24,27,0.04);
+  --shadow-lg: 0 16px 48px rgba(24,24,27,0.10), 0 4px 16px rgba(24,24,27,0.06);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #FAF7F3;
+    --bg-2: #F2EFE9;
+    --ink: #18181B;
+    --ink-soft: #52525B;
+    --ink-faint: #A1A1AA;
+    --line: #E7E0D6;
+    --card: #FFFFFF;
+  }
+}
+
+* { font-family: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif; }
+.serif { font-family: "Instrument Serif", Georgia, serif; }
+
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--ink); }
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-thumb { background: #D6D0C6; border-radius: 999px; }
