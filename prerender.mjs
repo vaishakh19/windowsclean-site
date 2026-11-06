@@ -2,7 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import { SITE_URL, SITE_NAME, LANGS, DOWNLOAD_URL } from "./site.config.mjs";
+import { SITE_URL, SITE_NAME, LANGS, DOWNLOAD_URL, SUPPORT_EMAIL } from "./site.config.mjs";
 import { loadArticles } from "./lib/articles.mjs";
 
 const dist = path.resolve("dist");
@@ -19,6 +19,7 @@ function head(lang) {
   const ld = {
     "@context": "https://schema.org",
     "@graph": [
+      { "@type": "Organization", name: SITE_NAME, url: `${SITE_URL}/`, logo: `${SITE_URL}/favicon.svg`, email: SUPPORT_EMAIL, contactPoint: { "@type": "ContactPoint", contactType: "customer support", email: SUPPORT_EMAIL } },
       { "@type": "WebSite", "@id": `${SITE_URL}/#website`, url: `${SITE_URL}/`, name: SITE_NAME, inLanguage: LANGS },
       {
         "@type": "SoftwareApplication",
@@ -107,7 +108,7 @@ function page({ title, description, canonical, body, jsonld, ogType = "website",
     <nav class="links"><a href="${BASE}">Home</a><a href="${BASE}articles/">Articles</a><a class="btn" href="${DOWNLOAD_URL}">Download Free</a></nav>
   </div></header>
 ${body}
-  <footer>© ${new Date().getFullYear()} ${SITE_NAME} · <a href="${BASE}">Home</a> · <a href="${BASE}articles/">Articles</a> · <a href="${BASE}feed.xml">RSS</a></footer>
+  <footer>© ${new Date().getFullYear()} ${SITE_NAME} · <a href="${BASE}">Home</a> · <a href="${BASE}articles/">Articles</a> · <a href="${BASE}feed.xml">RSS</a> · <a href="mailto:${SUPPORT_EMAIL}">${SUPPORT_EMAIL}</a></footer>
 </body>
 </html>`;
 }

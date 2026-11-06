@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { SEO } from "./seo";
 import ARTICLES from "virtual:articles";
-import { DOWNLOAD_URL, DOWNLOAD_FILE, CHECKOUT_URL } from "../site.config.mjs";
+import { DOWNLOAD_URL, DOWNLOAD_FILE, CHECKOUT_URL, SUPPORT_EMAIL, SHA_URL } from "../site.config.mjs";
 import dashboardImg from "./assets/5dd7c760c45d2c10-image_1b2327.jpg";
 import treemapImg from "./assets/080a13f798bd0652-image_bde4c5.jpg";
 import sunburstImg from "./assets/89998cc106f512b1-image_7462fa.jpg";
@@ -140,6 +140,11 @@ const dict = {
     search_ph: "Search guides...",
     final_title: "Ready to see what's hiding?",
     final_sub: "Free during beta. 2.4MB download. Uninstalls cleanly. No admin for user folders.",
+    smart_hint: "Windows may show a SmartScreen notice on first run — here's why that's normal.",
+    smart_title: "Seeing “Windows protected your PC”?",
+    smart_body: "That's Windows SmartScreen. It appears for apps that are new or not yet code-signed — Windows Clean is a small independent project and the installer isn't code-signed yet. Click More info → Run anyway. The app works offline and never uploads your files.",
+    smart_verify: "Verify your download (SHA-256)",
+    smart_support: "Questions? Email",
     final_download: "Download Windows Clean Free",
     final_email_ph: "you@studio.com",
     final_email_btn: "Get v1 launch email",
@@ -256,6 +261,11 @@ const dict = {
     search_ph: "Guides suchen...",
     final_title: "Bereit zu sehen, was sich versteckt?",
     final_sub: "Kostenlos in Beta. 2,4MB Download. Saubere Deinstallation.",
+    smart_hint: "Windows zeigt beim ersten Start evtl. eine SmartScreen-Meldung — hier steht, warum das normal ist.",
+    smart_title: "„Der PC wurde durch Windows geschützt“ gesehen?",
+    smart_body: "Das ist Windows SmartScreen. Es erscheint bei neuen Apps oder Apps ohne Code-Signatur — Windows Clean ist ein kleines unabhängiges Projekt und der Installer ist noch nicht code-signiert. Klicke auf Weitere Informationen → Trotzdem ausführen. Die App arbeitet offline und lädt keine Dateien hoch.",
+    smart_verify: "Download prüfen (SHA-256)",
+    smart_support: "Fragen? Schreib an",
     final_download: "Windows Clean kostenlos laden",
     final_email_ph: "du@studio.com",
     final_email_btn: "v1 Launch E-Mail",
@@ -372,6 +382,11 @@ const dict = {
     search_ph: "Chercher guides...",
     final_title: "Prêt à voir ce qui se cache ?",
     final_sub: "Gratuit en bêta. 2,4Mo. Désinstallation propre. Pas d'admin pour dossiers utilisateur.",
+    smart_hint: "Windows peut afficher un avis SmartScreen au premier lancement — voici pourquoi c'est normal.",
+    smart_title: "Vous voyez « Windows a protégé votre ordinateur » ?",
+    smart_body: "C'est Windows SmartScreen. Il s'affiche pour les applications récentes ou non signées — Windows Clean est un petit projet indépendant et l'installateur n'est pas encore signé. Cliquez sur Informations complémentaires → Exécuter quand même. L'application fonctionne hors ligne et n'envoie jamais vos fichiers.",
+    smart_verify: "Vérifier le téléchargement (SHA-256)",
+    smart_support: "Des questions ? Écrivez à",
     final_download: "Télécharger Windows Clean Gratuit",
     final_email_ph: "vous@studio.com",
     final_email_btn: "Email lancement v1",
@@ -488,6 +503,11 @@ const dict = {
     search_ph: "Buscar guías...",
     final_title: "¿Listo para ver qué se esconde?",
     final_sub: "Gratis en beta. 2,4MB. Desinstalación limpia. Sin admin para carpetas usuario.",
+    smart_hint: "Windows puede mostrar un aviso de SmartScreen la primera vez — por qué es normal.",
+    smart_title: "¿Ves «Windows protegió su PC»?",
+    smart_body: "Es Windows SmartScreen. Aparece en aplicaciones nuevas o sin firma de código — Windows Clean es un pequeño proyecto independiente y el instalador aún no está firmado. Haz clic en Más información → Ejecutar de todas formas. La app funciona sin conexión y nunca sube tus archivos.",
+    smart_verify: "Verifica tu descarga (SHA-256)",
+    smart_support: "¿Preguntas? Escribe a",
     final_download: "Descargar Windows Clean Gratis",
     final_email_ph: "tu@estudio.com",
     final_email_btn: "Email lanzamiento v1",
@@ -604,6 +624,11 @@ const dict = {
     search_ph: "ガイドを検索...",
     final_title: "何が隠れているか見てみませんか？",
     final_sub: "ベータ期間は無料。2.4MB。クリーンにアンインストール。ユーザーフォルダに管理者権限不要。",
+    smart_hint: "初回起動時にSmartScreenの警告が出ることがあります。これは正常です。",
+    smart_title: "「Windows によって PC が保護されました」と表示されましたか？",
+    smart_body: "これはWindows SmartScreenです。新しいアプリやコード署名のないアプリで表示されます。Windows Cleanは小規模な個人プロジェクトで、インストーラーはまだコード署名されていません。「詳細情報」→「実行」をクリックしてください。アプリはオフラインで動作し、ファイルをアップロードしません。",
+    smart_verify: "ダウンロードを確認 (SHA-256)",
+    smart_support: "ご質問は",
     final_download: "Windows Clean 無料ダウンロード",
     final_email_ph: "you@studio.com",
     final_email_btn: "v1リリース通知",
@@ -832,6 +857,7 @@ export default function App({ initialLang }: { initialLang?: Lang } = {}) {
               <a href="#dashboard" className="h-11 px-5 rounded-full bg-white border border-[var(--line)] text-[13px] font-medium flex items-center shadow-sm hover:shadow transition">{t.hero_how}</a>
             </div>
             <div className="mt-4 text-[11px] text-[var(--ink-faint)]">{t.trust}</div>
+            <a href="#install-help" className="mt-1 inline-block text-[11px] text-[var(--ink-faint)] underline underline-offset-2">🛡️ {t.smart_hint}</a>
 
             {/* Stats from screenshot */}
             <div className="mt-8 grid grid-cols-4 gap-3 max-w-[520px]">
@@ -1141,6 +1167,11 @@ export default function App({ initialLang }: { initialLang?: Lang } = {}) {
               <span className="px-2.5 py-1 rounded-full bg-white/10 border border-white/15">2.4MB • Clean uninstall</span>
               <span className="px-2.5 py-1 rounded-full bg-[#C5E49A] text-black font-semibold">213GB in 1m 25s • Real screenshot</span>
             </div>
+            <div id="install-help" className="mt-5 rounded-[16px] bg-white/10 border border-white/15 p-4 text-[12px] leading-[1.55] text-white/80 max-w-[520px] scroll-mt-24">
+              <div className="font-semibold text-white mb-1">🛡️ {t.smart_title}</div>
+              <p>{t.smart_body}</p>
+              <p className="mt-2"><a className="underline underline-offset-2" href={SHA_URL}>{t.smart_verify}</a> · {t.smart_support} <a className="underline underline-offset-2" href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a></p>
+            </div>
           </div>
           <div className="w-full md:w-[380px] flex flex-col gap-3 relative">
             <button onClick={handleDownload} className="h-11 px-6 rounded-full bg-white text-black text-[13px] font-semibold hover:opacity-90 transition w-full md:w-auto">{t.final_download}</button>
@@ -1156,7 +1187,7 @@ export default function App({ initialLang }: { initialLang?: Lang } = {}) {
         <div className="mx-auto max-w-[1280px] px-5 md:px-7 flex flex-wrap items-center justify-between gap-4 text-[11px] text-[var(--ink-faint)]">
           <div className="flex items-center gap-3">
             <div className="w-6 h-6 rounded-full bg-[var(--ink)] text-white flex items-center justify-center text-[10px] font-bold">W</div>
-            <span>© 2024 Windows Clean • {t.footer_note} • {lang.toUpperCase()} primary</span>
+            <span>© {__BUILD_YEAR__} Windows Clean • {t.footer_note} • <a className="underline underline-offset-2" href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a></span>
           </div>
           <div className="flex items-center gap-2">
             {LANGS.map(l => (

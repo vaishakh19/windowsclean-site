@@ -5,3 +5,5 @@ declare module "virtual:articles" {
   }[];
   export default articles;
 }
+
+declare const __BUILD_YEAR__: number;

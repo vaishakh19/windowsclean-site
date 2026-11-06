@@ -20,6 +20,6 @@ function articlesPlugin() {
 export default defineConfig({
   base: new URL(SITE_URL).pathname.replace(/\/?$/, "/"),
   // Make a build-time SITE_URL override visible to browser code too (site.config.mjs reads process.env).
-  define: { "process.env.SITE_URL": JSON.stringify(process.env.SITE_URL ?? "") },
+  define: { __BUILD_YEAR__: JSON.stringify(new Date().getFullYear()), "process.env.SITE_URL": JSON.stringify(process.env.SITE_URL ?? "") },
   plugins: [react(), articlesPlugin()],
 });
