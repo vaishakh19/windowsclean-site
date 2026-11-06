@@ -63,7 +63,6 @@ const dict = {
     dashboard_b2_d: "Recycle Bin 899MB with a note: files here are counted, not ghost space. System Restore (Admin Required) — restore points you forgot. Hiberfil.sys 2.94GB — disable hibernation and reclaim it instantly. Pagefile.sys, Delivery Optimization, all measured.",
     dashboard_b3_t: "System Protected, safely explained",
     dashboard_b3_d: "We don't let you break Windows. Files like WinSxS, Installer cache, System32 are flagged 'System Protected' with warnings. Learn what they do before you touch them. Safe deletion only — always to Recycle Bin, never permanent.",
-    dashboard_benefit: "Why this sells: Customers see their real problem in the first screenshot. No technical manual needed.",
     viz_kicker: "02 — THREE WAYS TO SEE",
     viz_title: "One drive. Three powerful lenses.",
     viz_sub: "Switch views. Find the hogs. Reclaim space your way.",
@@ -122,7 +121,7 @@ const dict = {
       "No renewals, No subscription, No account",
       "Purchased badge — lifetime",
     ],
-    pro_trust: "Trust that sells: Nothing leaves your PC. Offline and read-only. System Protected warnings. Safe deletion only. 2.4MB installer, uninstalls cleanly.",
+    pro_trust: "Nothing leaves your PC. Offline and read-only. System Protected warnings. Safe deletion only. 2.4MB installer, uninstalls cleanly.",
     pro_cta: "Get Pro — $12.99 once",
     cases_kicker: "05 — REAL SAVINGS",
     cases_title: "Real people, real space reclaimed.",
@@ -144,7 +143,7 @@ const dict = {
     final_download: "Download Windows Clean Free",
     final_email_ph: "you@studio.com",
     final_email_btn: "Get v1 launch email",
-    footer_note: "Built offline in Berlin. No telemetry. No cookies.",
+    footer_note: "Built offline. No telemetry. No cookies.",
     toast_download: "Starting download — Windows-Clean-setup.exe",
     toast_lang: "Language updated",
     min_read: "min read",
@@ -180,7 +179,6 @@ const dict = {
     dashboard_b2_d: "Papierkorb 899MB mit Hinweis: Dateien gezählt, kein Geisterspeicher. Systemwiederherstellung (Admin nötig) — vergessene Wiederherstellungspunkte. Hiberfil.sys 2,94GB — Ruhezustand deaktivieren und sofort zurückholen.",
     dashboard_b3_t: "Systemgeschützt, sicher erklärt",
     dashboard_b3_d: "Wir lassen dich Windows nicht zerstören. WinSxS, Installer-Cache, System32 sind als 'Systemgeschützt' mit Warnungen markiert. Lerne, was sie tun, bevor du sie anfasst. Sicheres Löschen nur in Papierkorb, nie permanent.",
-    dashboard_benefit: "Warum das verkauft: Kunden sehen ihr echtes Problem im ersten Screenshot. Kein Handbuch nötig.",
     viz_kicker: "02 — DREI ANSICHTEN",
     viz_title: "Ein Laufwerk. Drei mächtige Linsen.",
     viz_sub: "Ansichten wechseln. Platzfresser finden. Auf deine Art aufräumen.",
@@ -239,7 +237,7 @@ const dict = {
       "Keine Verlängerungen, Kein Abo, Kein Konto",
       "Purchased Badge — lebenslang",
     ],
-    pro_trust: "Vertrauen das verkauft: Nichts verlässt deinen PC. Offline und nur lesend. Systemgeschützt-Warnungen. Nur sicheres Löschen. 2,4MB Installer.",
+    pro_trust: "Nichts verlässt deinen PC. Offline und nur lesend. Systemgeschützt-Warnungen. Nur sicheres Löschen. 2,4MB Installer.",
     pro_cta: "Pro holen — $12.99 einmalig",
     cases_kicker: "05 — ECHTE EINSPARUNGEN",
     cases_title: "Echte Menschen, echter freier Speicher.",
@@ -261,7 +259,7 @@ const dict = {
     final_download: "Windows Clean kostenlos laden",
     final_email_ph: "du@studio.com",
     final_email_btn: "v1 Launch E-Mail",
-    footer_note: "Offline in Berlin gebaut. Keine Telemetrie. Keine Cookies.",
+    footer_note: "Offline gebaut. Keine Telemetrie. Keine Cookies.",
     toast_download: "Download — Windows-Clean-setup.exe",
     toast_lang: "Sprache aktualisiert",
     min_read: "Min. Lesezeit",
@@ -297,7 +295,6 @@ const dict = {
     dashboard_b2_d: "Corbeille 899Mo avec note : fichiers comptés, pas d'espace fantôme. Restauration système (Admin requis) — points oubliés. Hiberfil.sys 2,94Go — désactivez hibernation et récupérez-le.",
     dashboard_b3_t: "Protégé système, expliqué en sécurité",
     dashboard_b3_d: "On ne vous laisse pas casser Windows. WinSxS, cache Installer, System32 sont marqués 'Protégé système' avec avertissements. Apprenez leur rôle avant de toucher. Suppression sécurisée uniquement — toujours vers Corbeille, jamais définitif.",
-    dashboard_benefit: "Pourquoi ça vend : Le client voit son vrai problème sur la première capture. Pas de manuel nécessaire.",
     viz_kicker: "02 — TROIS FAÇONS DE VOIR",
     viz_title: "Un disque. Trois lentilles puissantes.",
     viz_sub: "Changez de vue. Trouvez les gloutons. Récupérez à votre façon.",
@@ -356,7 +353,7 @@ const dict = {
       "Pas de renouvellements, Pas d'abonnement, Pas de compte",
       "Badge Purchased — à vie",
     ],
-    pro_trust: "Confiance qui vend : Rien ne quitte votre PC. Hors ligne et lecture seule. Avertissements Protégé système. Suppression sûre uniquement. Installateur 2,4Mo.",
+    pro_trust: "Rien ne quitte votre PC. Hors ligne et lecture seule. Avertissements Protégé système. Suppression sûre uniquement. Installateur 2,4Mo.",
     pro_cta: "Obtenir Pro — $12.99 une fois",
     cases_kicker: "05 — ÉCONOMIES RÉELLES",
     cases_title: "De vraies personnes, du vrai espace récupéré.",
@@ -378,7 +375,7 @@ const dict = {
     final_download: "Télécharger Windows Clean Gratuit",
     final_email_ph: "vous@studio.com",
     final_email_btn: "Email lancement v1",
-    footer_note: "Construit hors ligne à Berlin. Pas de télémétrie. Pas de cookies.",
+    footer_note: "Construit hors ligne. Pas de télémétrie. Pas de cookies.",
     toast_download: "Téléchargement — Windows-Clean-setup.exe",
     toast_lang: "Langue mise à jour",
     min_read: "min lecture",
@@ -414,7 +411,6 @@ const dict = {
     dashboard_b2_d: "Papelera 899MB con nota: archivos contados, no espacio fantasma. Restaurar sistema (Admin requerido) — puntos olvidados. Hiberfil.sys 2,94GB — desactiva hibernación y recupéralo.",
     dashboard_b3_t: "Protegido del sistema, explicado seguro",
     dashboard_b3_d: "No te dejamos romper Windows. WinSxS, caché Installer, System32 están marcados 'Protegido del sistema' con advertencias. Aprende qué hacen antes de tocar. Borrado seguro solo — siempre a Papelera, nunca permanente.",
-    dashboard_benefit: "Por qué vende: El cliente ve su problema real en la primera captura. Sin manual.",
     viz_kicker: "02 — TRES FORMAS DE VER",
     viz_title: "Un disco. Tres lentes poderosas.",
     viz_sub: "Cambia vistas. Encuentra glotones. Recupera a tu manera.",
@@ -473,7 +469,7 @@ const dict = {
       "Sin renovaciones, Sin suscripción, Sin cuenta",
       "Insignia Purchased — de por vida",
     ],
-    pro_trust: "Confianza que vende: Nada sale de tu PC. Offline y solo lectura. Advertencias Protegido del sistema. Solo borrado seguro. Instalador 2,4MB.",
+    pro_trust: "Nada sale de tu PC. Offline y solo lectura. Advertencias Protegido del sistema. Solo borrado seguro. Instalador 2,4MB.",
     pro_cta: "Obtener Pro — $12.99 una vez",
     cases_kicker: "05 — AHORROS REALES",
     cases_title: "Personas reales, espacio real recuperado.",
@@ -495,7 +491,7 @@ const dict = {
     final_download: "Descargar Windows Clean Gratis",
     final_email_ph: "tu@estudio.com",
     final_email_btn: "Email lanzamiento v1",
-    footer_note: "Construido offline en Berlín. Sin telemetría. Sin cookies.",
+    footer_note: "Construido offline. Sin telemetría. Sin cookies.",
     toast_download: "Descargando — Windows-Clean-setup.exe",
     toast_lang: "Idioma actualizado",
     min_read: "min lectura",
@@ -531,7 +527,6 @@ const dict = {
     dashboard_b2_d: "ごみ箱 899MB — 注記付き：ファイルはカウント済み、ゴーストではありません。システム復元（管理者必要）— 忘れられた復元ポイント。Hiberfil.sys 2.94GB — 休止状態を無効化して即回収。",
     dashboard_b3_t: "システム保護、安全性を説明",
     dashboard_b3_d: "Windowsを壊させません。WinSxS、インストーラーキャッシュ、System32は「システム保護」として警告付きでマーク。触る前に何をするか学べます。安全な削除のみ — 常にごみ箱へ、決して完全削除しません。",
-    dashboard_benefit: "なぜ売れるか：顧客は最初のスクリーンショットで自分の本当の問題を見る。マニュアル不要。",
     viz_kicker: "02 — 3つの視点",
     viz_title: "1つのドライブ。3つの強力なレンズ。",
     viz_sub: "ビューを切り替え。容量泥棒を見つけ。自分らしい方法で回収。",
@@ -590,7 +585,7 @@ const dict = {
       "更新料なし、サブスクなし、アカウントなし",
       "Purchasedバッジ — 永久",
     ],
-    pro_trust: "売れる信頼：PCから何も外部に出ません。オフラインで読み取り専用。システム保護警告。安全な削除のみ。2.4MBインストーラー。",
+    pro_trust: "PCから何も外部に出ません。オフラインで読み取り専用。システム保護警告。安全な削除のみ。2.4MBインストーラー。",
     pro_cta: "Proを取得 — $12.99一度きり",
     cases_kicker: "05 — 実際の節約",
     cases_title: "リアルな人、リアルに空いた容量。",
@@ -612,7 +607,7 @@ const dict = {
     final_download: "Windows Clean 無料ダウンロード",
     final_email_ph: "you@studio.com",
     final_email_btn: "v1リリース通知",
-    footer_note: "ベルリンでオフライン開発。テレメトリなし。Cookieなし。",
+    footer_note: "オフラインで開発。テレメトリなし。Cookieなし。",
     toast_download: "ダウンロード開始 — Windows-Clean-setup.exe",
     toast_lang: "言語を更新しました",
     min_read: "分で読める",
@@ -898,10 +893,6 @@ export default function App({ initialLang }: { initialLang?: Lang } = {}) {
                   </div>
                 </div>
               ))}
-              <div className="rounded-[16px] bg-[var(--ink)] text-white p-4 text-[12px] leading-[1.5] flex gap-2">
-                <span className="text-[16px]">💡</span>
-                <span><b>{t.dashboard_benefit.split(":")[0]}:</b> {t.dashboard_benefit.split(":").slice(1).join(":")}</span>
-              </div>
               <div className="grid grid-cols-3 gap-2 text-[11px]">
                 <div className="rounded-[12px] bg-white border border-[var(--line)] p-3"><div className="font-semibold">Left Sidebar</div><div className="opacity-60 mt-1 leading-snug">Scan Drive, Large Files, Duplicate Finder, Super Power Search, File Types, Old and Unused</div></div>
                 <div className="rounded-[12px] bg-white border border-[var(--line)] p-3"><div className="font-semibold">Volumes</div><div className="opacity-60 mt-1 leading-snug">C: 214GB 99% full, D: 45% — color-coded, instant urgency</div></div>
@@ -959,7 +950,6 @@ export default function App({ initialLang }: { initialLang?: Lang } = {}) {
                   <div className="grid grid-cols-2 gap-2">
                     {t.tree_stats.map(s => <div key={s} className="rounded-[12px] bg-white border border-[var(--line)] px-3 py-2 text-[11px] font-medium">{s}</div>)}
                   </div>
-                  <div className="rounded-[16px] bg-[#F5E6A0] border border-black/5 p-4 text-[12px] leading-[1.5]"><b>Customer hook:</b> Screenshot shows actual GTA V install taking 114GB. One purple rectangle tells the story — no explanation needed.</div>
                 </>
               )}
               {vizTab === "sunburst" && (
@@ -969,7 +959,6 @@ export default function App({ initialLang }: { initialLang?: Lang } = {}) {
                   <div className="grid grid-cols-2 gap-2">
                     {t.sun_stats.map(s => <div key={s} className="rounded-[12px] bg-white border border-[var(--line)] px-3 py-2 text-[11px] font-medium">{s}</div>)}
                   </div>
-                  <div className="rounded-[16px] bg-[#A8CBE6] border border-black/5 p-4 text-[12px] leading-[1.5]"><b>Customer hook:</b> Circular map looks premium, not technical. First-time users get it instantly — bigger slice = bigger problem.</div>
                 </>
               )}
               {vizTab === "filelist" && (
@@ -979,7 +968,6 @@ export default function App({ initialLang }: { initialLang?: Lang } = {}) {
                   <div className="grid grid-cols-2 gap-2">
                     {t.list_stats.map(s => <div key={s} className="rounded-[12px] bg-white border border-[var(--line)] px-3 py-2 text-[11px] font-medium">{s}</div>)}
                   </div>
-                  <div className="rounded-[16px] bg-[#EDE7DF] border border-black/5 p-4 text-[12px] leading-[1.5]"><b>Customer hook:</b> Shows Program Files (x86) 123GB exactly like Explorer, but sorted and actionable. Power users love control.</div>
                 </>
               )}
 
@@ -1023,9 +1011,8 @@ export default function App({ initialLang }: { initialLang?: Lang } = {}) {
               <div>
                 <div className="text-[11px] uppercase tracking-widest opacity-60">From screenshots</div>
                 <div className="mt-2 text-[15px] font-semibold leading-[1.3]">Left sidebar = real nav</div>
-                <div className="mt-2 text-[12px] leading-[1.5] opacity-70">Scan Drive, Large Files, Duplicate Finder, Super Power Search, File Types, Old and Unused, Cleanup, Scan History, Deletion History — all visible in our dashboard shot.</div>
+                <div className="mt-2 text-[12px] leading-[1.5] opacity-70">Scan Drive, Large Files, Duplicate Finder, Super Power Search, File Types, Old and Unused, Cleanup, Scan History, Deletion History.</div>
               </div>
-              <div className="mt-4 text-[11px] opacity-60">No mockups. All from /mnt/data.</div>
             </div>
           </div>
         </div>
