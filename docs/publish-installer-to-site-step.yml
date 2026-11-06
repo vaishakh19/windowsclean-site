@@ -1,0 +1,31 @@
+# PASTE this step into the PRIVATE app repo's .github/workflows/release.yml,
+# directly AFTER the existing "Publish the release" step (same indentation as the other steps).
+# On every release it copies the installer into the website repo; Vercel redeploys the site and serves
+#   https://www.windowsclean.space/download/Windows-Clean-setup.exe
+# so visitors never see GitHub.
+#
+# One-time setup:
+#  1. GitHub > Settings > Developer settings > Fine-grained tokens > Generate new token
+#       Repository access: ONLY  windowsclean-site   |   Permissions: Contents = Read and write
+#  2. In the private app repo: Settings > Secrets and variables > Actions > New repository secret
+#       Name: SITE_REPO_TOKEN     Value: (the token)
+
+      - name: Publish the installer to the website repo
+        shell: pwsh
+        env:
+          SITE_REPO_TOKEN: ${{ secrets.SITE_REPO_TOKEN }}
+        run: |
+          $tag = '${{ steps.tag.outputs.tag }}'
+          git clone --depth 1 "https://x-access-token:$($env:SITE_REPO_TOKEN)@github.com/vaishakh19/windowsclean-site.git" site-repo
+          if ($LASTEXITCODE -ne 0) { throw 'Could not clone the website repo.' }
+          New-Item -ItemType Directory -Force -Path site-repo/public/download | Out-Null
+          Copy-Item release/Windows-Clean-setup.exe, release/SHA256SUMS.txt -Destination site-repo/public/download/ -Force
+          Push-Location site-repo
+          git config user.name 'release-bot'
+          git config user.email 'release-bot@users.noreply.github.com'
+          git add public/download
+          git commit -m "Release $tag installer"
+          if ($LASTEXITCODE -ne 0) { throw 'Nothing to commit.' }
+          git push origin HEAD:main
+          if ($LASTEXITCODE -ne 0) { throw 'Could not push to the website repo.' }
+          Pop-Location

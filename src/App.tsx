@@ -1,5 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { SEO } from "./seo";
+import ARTICLES from "virtual:articles";
+import { DOWNLOAD_URL, DOWNLOAD_FILE, CHECKOUT_URL } from "../site.config.mjs";
 import dashboardImg from "./assets/5dd7c760c45d2c10-image_1b2327.jpg";
 import treemapImg from "./assets/080a13f798bd0652-image_bde4c5.jpg";
 import sunburstImg from "./assets/89998cc106f512b1-image_7462fa.jpg";
@@ -22,6 +24,14 @@ const THEMES = [
   { id: "sky", color: "#7FB0D8", label: "Sky" },
   { id: "peach", color: "#FFAA7A", label: "Peach" },
 ];
+
+const PRO_SOON: Record<Lang, string> = {
+  en: "Windows Clean Pro is coming soon.",
+  de: "Windows Clean Pro kommt bald.",
+  fr: "Windows Clean Pro arrive bientôt.",
+  es: "Windows Clean Pro llegará pronto.",
+  ja: "Windows Clean Proは近日公開です。",
+};
 
 const dict = {
   en: {
@@ -130,12 +140,12 @@ const dict = {
     articles_sub: "Practical storage wisdom. No fluff.",
     search_ph: "Search guides...",
     final_title: "Ready to see what's hiding?",
-    final_sub: "Free during beta. 2.4MB download. Installer signed. Uninstalls cleanly. No admin for user folders.",
+    final_sub: "Free during beta. 2.4MB download. Uninstalls cleanly. No admin for user folders.",
     final_download: "Download Windows Clean Free",
     final_email_ph: "you@studio.com",
     final_email_btn: "Get v1 launch email",
     footer_note: "Built offline in Berlin. No telemetry. No cookies.",
-    toast_download: "Starting download — Windows_Clean_Free_0.9.0.exe (2.4MB)",
+    toast_download: "Starting download — Windows-Clean-setup.exe",
     toast_lang: "Language updated",
     min_read: "min read",
     read_article: "Read",
@@ -247,12 +257,12 @@ const dict = {
     articles_sub: "Praktisches Speicher-Wissen. Kein Blabla.",
     search_ph: "Guides suchen...",
     final_title: "Bereit zu sehen, was sich versteckt?",
-    final_sub: "Kostenlos in Beta. 2,4MB Download. Installer signiert. Saubere Deinstallation.",
+    final_sub: "Kostenlos in Beta. 2,4MB Download. Saubere Deinstallation.",
     final_download: "Windows Clean kostenlos laden",
     final_email_ph: "du@studio.com",
     final_email_btn: "v1 Launch E-Mail",
     footer_note: "Offline in Berlin gebaut. Keine Telemetrie. Keine Cookies.",
-    toast_download: "Download — Windows_Clean_Free_0.9.0.exe (2,4MB)",
+    toast_download: "Download — Windows-Clean-setup.exe",
     toast_lang: "Sprache aktualisiert",
     min_read: "Min. Lesezeit",
     read_article: "Lesen",
@@ -364,12 +374,12 @@ const dict = {
     articles_sub: "Sagesse stockage pratique. Pas de blabla.",
     search_ph: "Chercher guides...",
     final_title: "Prêt à voir ce qui se cache ?",
-    final_sub: "Gratuit en bêta. 2,4Mo. Installateur signé. Désinstallation propre. Pas d'admin pour dossiers utilisateur.",
+    final_sub: "Gratuit en bêta. 2,4Mo. Désinstallation propre. Pas d'admin pour dossiers utilisateur.",
     final_download: "Télécharger Windows Clean Gratuit",
     final_email_ph: "vous@studio.com",
     final_email_btn: "Email lancement v1",
     footer_note: "Construit hors ligne à Berlin. Pas de télémétrie. Pas de cookies.",
-    toast_download: "Téléchargement — Windows_Clean_Free_0.9.0.exe (2,4Mo)",
+    toast_download: "Téléchargement — Windows-Clean-setup.exe",
     toast_lang: "Langue mise à jour",
     min_read: "min lecture",
     read_article: "Lire",
@@ -481,12 +491,12 @@ const dict = {
     articles_sub: "Sabiduría práctica de almacenamiento. Sin rodeos.",
     search_ph: "Buscar guías...",
     final_title: "¿Listo para ver qué se esconde?",
-    final_sub: "Gratis en beta. 2,4MB. Instalador firmado. Desinstalación limpia. Sin admin para carpetas usuario.",
+    final_sub: "Gratis en beta. 2,4MB. Desinstalación limpia. Sin admin para carpetas usuario.",
     final_download: "Descargar Windows Clean Gratis",
     final_email_ph: "tu@estudio.com",
     final_email_btn: "Email lanzamiento v1",
     footer_note: "Construido offline en Berlín. Sin telemetría. Sin cookies.",
-    toast_download: "Descargando — Windows_Clean_Free_0.9.0.exe (2,4MB)",
+    toast_download: "Descargando — Windows-Clean-setup.exe",
     toast_lang: "Idioma actualizado",
     min_read: "min lectura",
     read_article: "Leer",
@@ -598,12 +608,12 @@ const dict = {
     articles_sub: "実用的なストレージの知恵。余計な話なし。",
     search_ph: "ガイドを検索...",
     final_title: "何が隠れているか見てみませんか？",
-    final_sub: "ベータ期間は無料。2.4MB。署名済みインストーラー。クリーンにアンインストール。ユーザーフォルダに管理者権限不要。",
+    final_sub: "ベータ期間は無料。2.4MB。クリーンにアンインストール。ユーザーフォルダに管理者権限不要。",
     final_download: "Windows Clean 無料ダウンロード",
     final_email_ph: "you@studio.com",
     final_email_btn: "v1リリース通知",
     footer_note: "ベルリンでオフライン開発。テレメトリなし。Cookieなし。",
-    toast_download: "ダウンロード開始 — Windows_Clean_Free_0.9.0.exe (2.4MB)",
+    toast_download: "ダウンロード開始 — Windows-Clean-setup.exe",
     toast_lang: "言語を更新しました",
     min_read: "分で読める",
     read_article: "読む",
@@ -611,137 +621,7 @@ const dict = {
   },
 };
 
-type Article = {
-  id: string;
-  category: string;
-  date: string;
-  read: string;
-  title: { [k in Lang]: string };
-  excerpt: { [k in Lang]: string };
-};
 
-const ARTICLES: Article[] = [
-  {
-    id: "winsxs",
-    category: "Storage Tips",
-    date: "Oct 12, 2024",
-    read: "5",
-    title: {
-      en: "Why WinSxS is 6GB and why Treemap found it instantly",
-      de: "Warum WinSxS 6GB groß ist und Treemap es sofort fand",
-      fr: "Pourquoi WinSxS fait 6Go et Treemap l'a trouvé instantanément",
-      es: "Por qué WinSxS pesa 6GB y Treemap lo encontró al instante",
-      ja: "WinSxSが6GBある理由とTreemapが即座に発見した理由",
-    },
-    excerpt: {
-      en: "That blue block in our Treemap screenshot is WinSxS. Explained, safe cleanup with DISM, and what we flag as System Protected.",
-      de: "Der blaue Block in unserem Treemap-Screenshot ist WinSxS. Erklärt, sicheres Aufräumen mit DISM und was wir als Systemgeschützt markieren.",
-      fr: "Le bloc bleu dans notre capture Treemap est WinSxS. Expliqué, nettoyage sûr avec DISM.",
-      es: "Ese bloque azul en Treemap es WinSxS. Explicado, limpieza segura con DISM.",
-      ja: "Treemapの青いブロックはWinSxSです。解説、DISMでの安全なクリーンアップ。",
-    },
-  },
-  {
-    id: "gta",
-    category: "Guides",
-    date: "Sep 28, 2024",
-    read: "4",
-    title: {
-      en: "Gamer guide: That 114GB GTA V block and how to reclaim it",
-      de: "Gamer-Guide: Der 114GB GTA V Block und wie du ihn zurückholst",
-      fr: "Guide gamer : ce bloc GTA V de 114Go et comment le récupérer",
-      es: "Guía gamer: ese bloque GTA V de 114GB y cómo recuperarlo",
-      ja: "ゲーマー向け：114GBのGTA Vブロックと回収方法",
-    },
-    excerpt: {
-      en: "Rockstar vs Steam install, save locations, and how File List shows exact paths before you delete. Our screenshot proves it.",
-      de: "Rockstar vs Steam Installation, Save-Orte und wie Dateiliste exakte Pfade vor dem Löschen zeigt.",
-      fr: "Install Rockstar vs Steam, emplacements saves, et comment File List montre chemins exacts.",
-      es: "Instalación Rockstar vs Steam, ubicaciones guardado y cómo File List muestra rutas exactas.",
-      ja: "RockstarとSteamのインストール、セーブ場所、File Listが削除前に正確なパスを表示する方法。",
-    },
-  },
-  {
-    id: "sunburst",
-    category: "Guides",
-    date: "Sep 15, 2024",
-    read: "6",
-    title: {
-      en: "Sunburst vs Treemap vs File List: which to use when?",
-      de: "Sunburst vs Treemap vs Dateiliste: wann welche nutzen?",
-      fr: "Sunburst vs Treemap vs Liste : laquelle utiliser quand ?",
-      es: "Sunburst vs Treemap vs Lista: ¿cuál usar cuándo?",
-      ja: "Sunburst vs Treemap vs ファイルリスト：いつどれを使う？",
-    },
-    excerpt: {
-      en: "213GB, 693K files example from our dashboard. Sunburst for overview, Treemap for hogs, File List for actions. Real workflow.",
-      de: "213GB, 693K Dateien Beispiel aus Dashboard. Sunburst für Überblick, Treemap für Platzfresser, Dateiliste für Aktionen.",
-      fr: "Exemple 213Go, 693K fichiers. Sunburst pour vue d'ensemble, Treemap pour gloutons, Liste pour actions.",
-      es: "Ejemplo 213GB, 693K archivos. Sunburst para vista general, Treemap para glotones, Lista para acciones.",
-      ja: "ダッシュボードの213GB、693Kファイル例。Sunburstは概要、Treemapは大食い、File Listはアクション用。",
-    },
-  },
-  {
-    id: "recycle",
-    category: "Storage Tips",
-    date: "Aug 30, 2024",
-    read: "3",
-    title: {
-      en: "Recycle Bin 899MB: why it's counted and why that's honest",
-      de: "Papierkorb 899MB: warum gezählt und warum ehrlich",
-      fr: "Corbeille 899Mo : pourquoi comptée et pourquoi honnête",
-      es: "Papelera 899MB: por qué se cuenta y por qué es honesto",
-      ja: "ごみ箱899MB：なぜカウントされるか、なぜ正直なのか",
-    },
-    excerpt: {
-      en: "Our dashboard screenshot shows Recycle Bin with an actionable note. How other cleaners hide it and we don't. Safe deletion only.",
-      de: "Unser Dashboard zeigt Papierkorb mit Aktions-Hinweis. Wie andere Cleaner ihn verstecken und wir nicht.",
-      fr: "Notre dashboard montre Corbeille avec note actionnable. Comment autres nettoyeurs la cachent.",
-      es: "Nuestro panel muestra Papelera con nota accionable. Cómo otros limpiadores la ocultan.",
-      ja: "ダッシュボードはごみ箱を実行可能な注記付きで表示。他のクリーナーが隠す方法と私たちが隠さない理由。",
-    },
-  },
-  {
-    id: "hiber",
-    category: "Performance",
-    date: "Aug 14, 2024",
-    read: "4",
-    title: {
-      en: "Hiberfil.sys 2.94GB: disable hibernation and reclaim instantly",
-      de: "Hiberfil.sys 2,94GB: Ruhezustand deaktivieren und sofort zurückholen",
-      fr: "Hiberfil.sys 2,94Go : désactiver hibernation et récupérer instantanément",
-      es: "Hiberfil.sys 2,94GB: desactiva hibernación y recupera al instante",
-      ja: "Hiberfil.sys 2.94GB：休止状態を無効化して即座に回収",
-    },
-    excerpt: {
-      en: "Seen in our Volumes screenshot. What it does, when you need it, powercfg /h off, and how we explain it safely.",
-      de: "Im Volumes-Screenshot zu sehen. Was es tut, wann du es brauchst, powercfg /h off und wie wir es sicher erklären.",
-      fr: "Vu dans capture Volumes. Son rôle, quand besoin, powercfg /h off, explication sûre.",
-      es: "Visto en captura Volúmenes. Qué hace, cuándo lo necesitas, powercfg /h off.",
-      ja: "Volumesスクリーンショットで確認。その役割、必要な時、powercfg /h off、安全な説明方法。",
-    },
-  },
-  {
-    id: "safe",
-    category: "Privacy",
-    date: "Jul 29, 2024",
-    read: "5",
-    title: {
-      en: "Safe deletion only: Recycle Bin, confirmation, full path shown",
-      de: "Nur sicheres Löschen: Papierkorb, Bestätigung, voller Pfad angezeigt",
-      fr: "Suppression sûre uniquement : Corbeille, confirmation, chemin complet affiché",
-      es: "Solo borrado seguro: Papelera, confirmación, ruta completa mostrada",
-      ja: "安全な削除のみ：ごみ箱、確認、フルパス表示",
-    },
-    excerpt: {
-      en: "Our Pro screenshot shows the delete dialog: exact name, full path, size. Nothing ever deleted permanently without confirmation. Offline, read-only core.",
-      de: "Unser Pro-Screenshot zeigt Lösch-Dialog: exakter Name, voller Pfad, Größe. Nie permanent ohne Bestätigung. Offline, nur lesend.",
-      fr: "Notre capture Pro montre dialogue suppression : nom exact, chemin complet, taille. Jamais définitif sans confirmation.",
-      es: "Nuestra captura Pro muestra diálogo borrado: nombre exacto, ruta completa, tamaño. Nunca permanente sin confirmación.",
-      ja: "Proスクリーンショットは削除ダイアログを表示：正確な名前、フルパス、サイズ。確認なしに完全削除されることは決してありません。",
-    },
-  },
-];
 
 function ScreenshotFrame({ src, label, annotations, children }: { src: string; label: string; annotations?: { text: string; pos: string }[]; children?: React.ReactNode }) {
   return (
@@ -823,11 +703,23 @@ export default function App({ initialLang }: { initialLang?: Lang } = {}) {
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
-    return ARTICLES.filter(a => !q || a.title[lang].toLowerCase().includes(q) || a.excerpt[lang].toLowerCase().includes(q));
+    return ARTICLES.filter(a => !q || a.title.toLowerCase().includes(q) || a.description.toLowerCase().includes(q));
   }, [search, lang]);
+
+  const handlePro = () => {
+    if (CHECKOUT_URL) window.location.assign(CHECKOUT_URL);
+    else setToast(PRO_SOON[lang]);
+  };
 
   const handleDownload = () => {
     setToast(t.toast_download);
+    // Same-origin file: the browser saves it directly, the page stays put.
+    const a = document.createElement("a");
+    a.href = DOWNLOAD_URL;
+    a.download = DOWNLOAD_FILE;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
   };
 
   return (
@@ -845,7 +737,7 @@ export default function App({ initialLang }: { initialLang?: Lang } = {}) {
           <div className="flex items-center gap-3 min-w-0">
             <div className="w-8 h-8 rounded-full bg-[var(--ink)] text-white flex items-center justify-center font-bold text-[13px] shrink-0">W</div>
             <span className="font-semibold text-[15px] tracking-tight truncate">Windows Clean</span>
-            <span className="hidden sm:inline-flex text-[10px] font-semibold tracking-widest px-2 py-0.5 rounded-full bg-[var(--bg-2)] border border-[var(--line)] shrink-0">BETA 0.9.0</span>
+            <span className="hidden sm:inline-flex text-[10px] font-semibold tracking-widest px-2 py-0.5 rounded-full bg-[var(--bg-2)] border border-[var(--line)] shrink-0">BETA 0.1.0</span>
             <div className="hidden md:flex items-center gap-1.5 ml-3">
               {THEMES.map(th => (
                 <button
@@ -1185,7 +1077,7 @@ export default function App({ initialLang }: { initialLang?: Lang } = {}) {
                     <div key={i} className="flex gap-2 text-[12.5px] leading-[1.4]"><span className="text-[#C5E49A]">✓</span><span className="text-white/80">{f}</span></div>
                   ))}
                 </div>
-                <button onClick={handleDownload} className="mt-6 w-full h-11 rounded-full bg-white text-black text-[13px] font-semibold hover:opacity-90 transition relative">{t.pro_cta}</button>
+                <button onClick={handlePro} className="mt-6 w-full h-11 rounded-full bg-white text-black text-[13px] font-semibold hover:opacity-90 transition relative">{t.pro_cta}</button>
                 <div className="mt-3 text-[11px] text-white/50 text-center relative">One-time purchase. No subscription. No renewals. Offline.</div>
               </div>
             </div>
@@ -1235,16 +1127,16 @@ export default function App({ initialLang }: { initialLang?: Lang } = {}) {
             </div>
           </div>
           <div className="grid md:grid-cols-3 gap-4">
-            {filtered.map(a => (
-              <div key={a.id} className="rounded-[20px] bg-white border border-[var(--line)] p-5 shadow-[var(--shadow)] hover:shadow-[var(--shadow-lg)] transition flex flex-col">
+            {filtered.slice(0, 6).map(a => (
+              <a key={a.slug} href={`${import.meta.env.BASE_URL}articles/${a.slug}/`} className="rounded-[20px] bg-white border border-[var(--line)] p-5 shadow-[var(--shadow)] hover:shadow-[var(--shadow-lg)] transition flex flex-col">
                 <div className="flex items-center gap-2 mb-3">
                   <span className="px-2.5 py-1 rounded-full bg-[var(--bg-2)] border border-[var(--line)] text-[10px] font-semibold tracking-widest uppercase">{a.category}</span>
-                  <span className="text-[11px] text-[var(--ink-faint)]">{a.date} • {a.read} {t.min_read}</span>
+                  <span className="text-[11px] text-[var(--ink-faint)]">{a.date} • {a.minutes} {t.min_read}</span>
                 </div>
-                <div className="text-[15px] font-semibold leading-[1.3] tracking-tight line-clamp-2">{a.title[lang]}</div>
-                <div className="mt-2 text-[13px] leading-[1.5] text-[var(--ink-soft)] line-clamp-2">{a.excerpt[lang]}</div>
+                <h3 className="text-[15px] font-semibold leading-[1.3] tracking-tight line-clamp-2">{a.title}</h3>
+                <p className="mt-2 text-[13px] leading-[1.5] text-[var(--ink-soft)] line-clamp-2">{a.description}</p>
                 <div className="mt-auto pt-4 text-[11px] font-semibold tracking-widest uppercase opacity-60">{t.read_article} →</div>
-              </div>
+              </a>
             ))}
           </div>
         </div>
@@ -1259,7 +1151,7 @@ export default function App({ initialLang }: { initialLang?: Lang } = {}) {
             <p className="mt-2 text-[13px] text-white/70 max-w-[460px]">{t.final_sub}</p>
             <div className="mt-4 flex flex-wrap gap-2 text-[11px]">
               <span className="px-2.5 py-1 rounded-full bg-white/10 border border-white/15">Offline • Read-only • No upload</span>
-              <span className="px-2.5 py-1 rounded-full bg-white/10 border border-white/15">2.4MB • Signed • Clean uninstall</span>
+              <span className="px-2.5 py-1 rounded-full bg-white/10 border border-white/15">2.4MB • Clean uninstall</span>
               <span className="px-2.5 py-1 rounded-full bg-[#C5E49A] text-black font-semibold">213GB in 1m 25s • Real screenshot</span>
             </div>
           </div>

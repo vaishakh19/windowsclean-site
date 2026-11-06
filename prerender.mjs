@@ -2,7 +2,8 @@
 import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import { SITE_URL, SITE_NAME, LANGS } from "./site.config.mjs";
+import { SITE_URL, SITE_NAME, LANGS, DOWNLOAD_URL } from "./site.config.mjs";
+import { loadArticles } from "./lib/articles.mjs";
 
 const dist = path.resolve("dist");
 const template = fs.readFileSync(path.join(dist, "index.html"), "utf8");
@@ -68,6 +69,109 @@ for (const lang of LANGS) {
   fs.writeFileSync(path.join(out, "index.html"), html);
 }
 
+
+// ---------- Articles (content/articles/*.md) ----------
+const BASE = new URL(SITE_URL).pathname.replace(/\/?$/, "/");
+const articles = loadArticles("content/articles");
+const fmtDate = (d) => new Date(d + "T00:00:00Z").toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" });
+const abs = (p) => (/^https?:/.test(p) ? p : `${SITE_URL}/${p.replace(/^\//, "")}`);
+
+function page({ title, description, canonical, body, jsonld, ogType = "website", ogImage: img = ogImage }) {
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${esc(title)}</title>
+  <meta name="description" content="${esc(description)}">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <link rel="canonical" href="${canonical}">
+  <link rel="icon" type="image/svg+xml" href="${BASE}favicon.svg">
+  <link rel="alternate" type="application/rss+xml" title="${SITE_NAME} articles" href="${SITE_URL}/feed.xml">
+  <meta property="og:type" content="${ogType}">
+  <meta property="og:site_name" content="${SITE_NAME}">
+  <meta property="og:title" content="${esc(title)}">
+  <meta property="og:description" content="${esc(description)}">
+  <meta property="og:url" content="${canonical}">
+  <meta property="og:image" content="${img}">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Instrument+Serif&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="${BASE}blog.css">
+  <script type="application/ld+json">${JSON.stringify(jsonld)}</script>
+</head>
+<body>
+  <header class="top"><div class="in">
+    <a class="brand" href="${BASE}"><b>W</b> ${SITE_NAME}</a>
+    <nav class="links"><a href="${BASE}">Home</a><a href="${BASE}articles/">Articles</a><a class="btn" href="${DOWNLOAD_URL}">Download Free</a></nav>
+  </div></header>
+${body}
+  <footer>© ${new Date().getFullYear()} ${SITE_NAME} · <a href="${BASE}">Home</a> · <a href="${BASE}articles/">Articles</a> · <a href="${BASE}feed.xml">RSS</a></footer>
+</body>
+</html>`;
+}
+
+const cta = `<div class="cta"><strong>See what's taking up your disk space</strong><p>Windows Clean is a free, offline disk space analyzer for Windows. No cloud, no telemetry.</p><a class="btn" href="${DOWNLOAD_URL}">Download for Windows — Free</a></div>`;
+
+for (const a of articles) {
+  const url = `${SITE_URL}/articles/${a.slug}/`;
+  const body = `  <main><article>
+    <div class="crumbs"><a href="${BASE}">Home</a> › <a href="${BASE}articles/">Articles</a></div>
+    <h1>${esc(a.title)}</h1>
+    <p class="meta"><span class="tag">${esc(a.category)}</span>${fmtDate(a.date)} · ${a.minutes} min read</p>
+    ${a.html}
+    ${cta}
+  </article></main>`;
+  const jsonld = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BlogPosting",
+        headline: a.title,
+        description: a.description,
+        datePublished: a.date,
+        dateModified: a.date,
+        mainEntityOfPage: url,
+        image: a.image ? abs(a.image) : ogImage,
+        author: { "@type": "Organization", name: SITE_NAME },
+        publisher: { "@type": "Organization", name: SITE_NAME, logo: { "@type": "ImageObject", url: `${SITE_URL}/favicon.svg` } },
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
+          { "@type": "ListItem", position: 2, name: "Articles", item: `${SITE_URL}/articles/` },
+          { "@type": "ListItem", position: 3, name: a.title, item: url },
+        ],
+      },
+    ],
+  };
+  const dir = path.join(dist, "articles", a.slug);
+  fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(path.join(dir, "index.html"), page({ title: `${a.title} | ${SITE_NAME}`, description: a.description, canonical: url, body, jsonld, ogType: "article", ogImage: a.image ? abs(a.image) : ogImage }));
+}
+
+{
+  const cards = articles.map((a) => `<a class="card" href="${BASE}articles/${a.slug}/"><span class="tag">${esc(a.category)}</span><span class="meta">${fmtDate(a.date)} · ${a.minutes} min read</span><h2>${esc(a.title)}</h2><p>${esc(a.description)}</p></a>`).join("\n    ");
+  const body = `  <main class="wide">
+    <h1>Windows storage articles</h1>
+    <p class="meta">Practical guides on disk space, cleanup and what is safe to delete.</p>
+    <div class="grid">
+    ${cards || "<p>No articles yet.</p>"}
+    </div>
+  </main>`;
+  const jsonld = { "@context": "https://schema.org", "@type": "CollectionPage", name: `${SITE_NAME} articles`, url: `${SITE_URL}/articles/` };
+  fs.mkdirSync(path.join(dist, "articles"), { recursive: true });
+  fs.writeFileSync(path.join(dist, "articles", "index.html"), page({ title: `Windows Storage Articles & Guides | ${SITE_NAME}`, description: "Practical guides on Windows disk space, what is safe to delete, and how to reclaim storage.", canonical: `${SITE_URL}/articles/`, body, jsonld }));
+}
+
+const rssItems = articles.map((a) => `    <item><title>${esc(a.title)}</title><link>${SITE_URL}/articles/${a.slug}/</link><guid>${SITE_URL}/articles/${a.slug}/</guid><pubDate>${new Date(a.date + "T00:00:00Z").toUTCString()}</pubDate><description>${esc(a.description)}</description></item>`).join("\n");
+fs.writeFileSync(path.join(dist, "feed.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0"><channel>\n    <title>${SITE_NAME} articles</title><link>${SITE_URL}/articles/</link><description>Windows storage guides</description>\n${rssItems}\n</channel></rss>\n`);
+
+const articleUrls = [{ loc: `${SITE_URL}/articles/`, lastmod: articles[0]?.date }, ...articles.map((a) => ({ loc: `${SITE_URL}/articles/${a.slug}/`, lastmod: a.date }))]
+  .map((u) => `  <url>\n    <loc>${u.loc}</loc>${u.lastmod ? `\n    <lastmod>${u.lastmod}</lastmod>` : ""}\n  </url>`).join("\n");
+
 const today = new Date().toISOString().slice(0, 10);
 const sm = LANGS.map(
   (l) =>
@@ -79,9 +183,8 @@ const sm = LANGS.map(
 ).join("\n");
 fs.writeFileSync(
   path.join(dist, "sitemap.xml"),
-  `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${sm}\n</urlset>\n`,
+  `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${sm}\n${articleUrls}\n</urlset>\n`,
 );
 fs.writeFileSync(path.join(dist, "robots.txt"), `User-agent: *\nAllow: /\n\nSitemap: ${SITE_URL}/sitemap.xml\n`);
 fs.copyFileSync(path.join(dist, "index.html"), path.join(dist, "404.html"));
-fs.writeFileSync(path.join(dist, ".nojekyll"), "");
 console.log("Prerendered:", LANGS.join(", "));
