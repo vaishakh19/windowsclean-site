@@ -1,0 +1,17 @@
+# After every push to main, wait for Vercel to deploy, then tell search engines (IndexNow).
+name: IndexNow
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Wait for the Vercel deploy
+        run: sleep 150
+      - run: node scripts/indexnow.mjs

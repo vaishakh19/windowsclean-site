@@ -2,11 +2,11 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import { SEO } from "./seo";
 import ARTICLES from "virtual:articles";
 import { DOWNLOAD_URL, DOWNLOAD_FILE, CHECKOUT_URL, SUPPORT_EMAIL, SHA_URL } from "../site.config.mjs";
-import dashboardImg from "./assets/5dd7c760c45d2c10-image_1b2327.jpg";
-import treemapImg from "./assets/080a13f798bd0652-image_bde4c5.jpg";
-import sunburstImg from "./assets/89998cc106f512b1-image_7462fa.jpg";
-import filelistImg from "./assets/d40e9e426f6c85f2-image_ed87b5.jpg";
-import pricingImg from "./assets/5d310f5a4c0732a5-image_2c836f.jpg";
+import dashboardImg from "./assets/5dd7c760c45d2c10-image_1b2327.webp";
+import treemapImg from "./assets/080a13f798bd0652-image_bde4c5.webp";
+import sunburstImg from "./assets/89998cc106f512b1-image_7462fa.webp";
+import filelistImg from "./assets/d40e9e426f6c85f2-image_ed87b5.webp";
+import pricingImg from "./assets/5d310f5a4c0732a5-image_2c836f.webp";
 
 type Lang = "en" | "de" | "fr" | "es" | "ja";
 
@@ -643,7 +643,16 @@ const dict = {
 
 
 
-function ScreenshotFrame({ src, label, annotations, children }: { src: string; label: string; annotations?: { text: string; pos: string }[]; children?: React.ReactNode }) {
+const IMG_DIMS = new Map<string, [number, number]>([
+  [dashboardImg, [1917, 986]],
+  [treemapImg, [1917, 983]],
+  [sunburstImg, [1917, 987]],
+  [filelistImg, [1917, 982]],
+  [pricingImg, [1217, 508]],
+]);
+
+function ScreenshotFrame({ src, label, annotations, children, priority }: { src: string; label: string; annotations?: { text: string; pos: string }[]; children?: React.ReactNode; priority?: boolean }) {
+  const [iw, ih] = IMG_DIMS.get(src) ?? [1600, 1000];
   return (
     <div className="relative group">
       <div className="rounded-[20px] md:rounded-[28px] bg-white border border-[var(--line)] shadow-[var(--shadow-lg)] overflow-hidden">
@@ -660,7 +669,7 @@ function ScreenshotFrame({ src, label, annotations, children }: { src: string; l
           <div className="w-[52px]" />
         </div>
         <div className="relative bg-[#FAF7F3]">
-          <img src={src} alt={label} className="w-full h-auto object-contain block" />
+          <img src={src} alt={label} width={iw} height={ih} decoding="async" {...(priority ? { fetchPriority: "high" as const } : { loading: "lazy" as const })} className="w-full h-auto object-contain block" />
           {annotations?.map((a, i) => (
             <div key={i} className={`absolute ${a.pos} hidden md:block`}>
               <div className="px-2.5 py-1 rounded-full bg-[var(--ink)] text-white text-[10px] font-semibold shadow-lg whitespace-nowrap flex items-center gap-1.5">
@@ -830,6 +839,7 @@ export default function App({ initialLang }: { initialLang?: Lang } = {}) {
           </div>
         )}
       </header>
+      <main>
 
       {/* HERO */}
       <section className="mx-auto max-w-[1280px] px-5 md:px-7 pt-10 md:pt-16 pb-8 md:pb-14">
@@ -876,7 +886,7 @@ export default function App({ initialLang }: { initialLang?: Lang } = {}) {
           </div>
 
           <div className="relative md:sticky md:top-[84px]">
-            <ScreenshotFrame src={dashboardImg} label="HOME • SCAN DRIVE • C: 213GB" annotations={[{ text: "C: 99% FULL • 1.46GB FREE", pos: "top-[62%] left-[8%]" }, { text: "RECYCLE BIN 899MB", pos: "top-[78%] right-[8%]" }]} />
+            <ScreenshotFrame priority src={dashboardImg} label="HOME • SCAN DRIVE • C: 213GB" annotations={[{ text: "C: 99% FULL • 1.46GB FREE", pos: "top-[62%] left-[8%]" }, { text: "RECYCLE BIN 899MB", pos: "top-[78%] right-[8%]" }]} />
             <div className="absolute -left-2 -bottom-4 md:-left-4 md:-bottom-6 bg-white border border-[var(--line)] shadow-[var(--shadow)] rounded-full px-3 py-1.5 text-[11px] font-medium flex items-center gap-1.5">
               <span className="w-4 h-4 rounded-full bg-[var(--pill-green)] flex items-center justify-center">✓</span> Offline • No cloud • 2.4MB
             </div>
@@ -889,7 +899,7 @@ export default function App({ initialLang }: { initialLang?: Lang } = {}) {
         <div className="mx-auto max-w-[1280px] px-5 md:px-7 py-14 md:py-20">
           <div className="flex flex-wrap items-end justify-between gap-4 mb-10">
             <div>
-              <div className="text-[11px] font-semibold tracking-[0.18em] uppercase opacity-60 mb-3">{t.dashboard_kicker}</div>
+              <div className="text-[11px] font-semibold tracking-[0.18em] uppercase opacity-80 mb-3">{t.dashboard_kicker}</div>
               <h2 className="serif text-[32px] md:text-[48px] leading-[0.9] tracking-tight max-w-[560px]">{t.dashboard_title}</h2>
               <p className="mt-4 text-[13px] text-[var(--ink-soft)] max-w-[520px]">{t.dashboard_p1}</p>
             </div>
@@ -932,7 +942,7 @@ export default function App({ initialLang }: { initialLang?: Lang } = {}) {
       {/* VISUALIZATIONS */}
       <section id="visualizations" className="border-t border-[var(--line)]">
         <div className="mx-auto max-w-[1280px] px-5 md:px-7 py-14 md:py-20">
-          <div className="text-[11px] font-semibold tracking-[0.18em] uppercase opacity-60 mb-3">{t.viz_kicker}</div>
+          <div className="text-[11px] font-semibold tracking-[0.18em] uppercase opacity-80 mb-3">{t.viz_kicker}</div>
           <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
             <h2 className="serif text-[32px] md:text-[48px] leading-[0.9] tracking-tight">{t.viz_title}</h2>
             <p className="text-[13px] text-[var(--ink-soft)] max-w-[380px]">{t.viz_sub}</p>
@@ -1009,7 +1019,7 @@ export default function App({ initialLang }: { initialLang?: Lang } = {}) {
       {/* POWER FEATURES */}
       <section className="border-t border-[var(--line)] bg-[#F2EFE9]">
         <div className="mx-auto max-w-[1280px] px-5 md:px-7 py-14 md:py-20">
-          <div className="text-[11px] font-semibold tracking-[0.18em] uppercase opacity-60 mb-3">{t.power_kicker}</div>
+          <div className="text-[11px] font-semibold tracking-[0.18em] uppercase opacity-80 mb-3">{t.power_kicker}</div>
           <div className="flex flex-wrap items-end justify-between gap-4 mb-10">
             <h2 className="serif text-[32px] md:text-[48px] leading-[0.9] tracking-tight max-w-[560px]">{t.power_title}</h2>
             <p className="text-[13px] text-[var(--ink-soft)] max-w-[360px]">{t.power_sub}</p>
@@ -1047,7 +1057,7 @@ export default function App({ initialLang }: { initialLang?: Lang } = {}) {
       {/* PRICING */}
       <section id="pricing" className="border-t border-[var(--line)]">
         <div className="mx-auto max-w-[1280px] px-5 md:px-7 py-14 md:py-20">
-          <div className="text-[11px] font-semibold tracking-[0.18em] uppercase opacity-60 mb-3">{t.pricing_kicker}</div>
+          <div className="text-[11px] font-semibold tracking-[0.18em] uppercase opacity-80 mb-3">{t.pricing_kicker}</div>
           <div className="flex flex-wrap items-end justify-between gap-4 mb-10">
             <h2 className="serif text-[32px] md:text-[48px] leading-[0.9] tracking-tight">{t.pricing_title}</h2>
             <p className="text-[13px] text-[var(--ink-soft)]">{t.pricing_sub}</p>
@@ -1101,7 +1111,7 @@ export default function App({ initialLang }: { initialLang?: Lang } = {}) {
       {/* CASES */}
       <section id="cases" className="border-t border-[var(--line)] bg-white/60">
         <div className="mx-auto max-w-[1280px] px-5 md:px-7 py-14 md:py-20">
-          <div className="text-[11px] font-semibold tracking-[0.18em] uppercase opacity-60 mb-3">{t.cases_kicker}</div>
+          <div className="text-[11px] font-semibold tracking-[0.18em] uppercase opacity-80 mb-3">{t.cases_kicker}</div>
           <h2 className="serif text-[32px] md:text-[44px] leading-[0.9] tracking-tight mb-8">{t.cases_title}</h2>
           <div className="grid md:grid-cols-3 gap-4">
             {[
@@ -1115,7 +1125,7 @@ export default function App({ initialLang }: { initialLang?: Lang } = {}) {
                   <div className="px-2.5 py-1 rounded-full text-[12px] font-bold border border-black/5" style={{ background: c.color }}>{c.metric}</div>
                 </div>
                 <div className="mt-4 rounded-[14px] overflow-hidden border border-[var(--line)]">
-                  <img src={c.img} alt={c.label} className="w-full h-[140px] object-cover object-top" />
+                  <img src={c.img} alt={c.label} loading="lazy" decoding="async" width={1917} height={140} className="w-full h-[140px] object-cover object-top" />
                 </div>
                 <div className="mt-4 text-[13px] leading-[1.5] text-[var(--ink-soft)] flex-1">{c.story}</div>
                 <div className="mt-4 text-[11px] font-semibold tracking-widest uppercase opacity-60">{t.read_case} → {c.label}</div>
@@ -1130,7 +1140,7 @@ export default function App({ initialLang }: { initialLang?: Lang } = {}) {
         <div className="mx-auto max-w-[1280px] px-5 md:px-7 py-14 md:py-20">
           <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
             <div>
-              <div className="text-[11px] font-semibold tracking-[0.18em] uppercase opacity-60 mb-3">{t.articles_kicker}</div>
+              <div className="text-[11px] font-semibold tracking-[0.18em] uppercase opacity-80 mb-3">{t.articles_kicker}</div>
               <h2 className="serif text-[32px] md:text-[44px] leading-[0.9] tracking-tight">{t.articles_title}</h2>
               <p className="mt-2 text-[13px] text-[var(--ink-soft)]">{t.articles_sub}</p>
             </div>
@@ -1183,11 +1193,12 @@ export default function App({ initialLang }: { initialLang?: Lang } = {}) {
         </div>
       </section>
 
+      </main>
       <footer className="border-t border-[var(--line)] py-8">
         <div className="mx-auto max-w-[1280px] px-5 md:px-7 flex flex-wrap items-center justify-between gap-4 text-[11px] text-[var(--ink-faint)]">
           <div className="flex items-center gap-3">
             <div className="w-6 h-6 rounded-full bg-[var(--ink)] text-white flex items-center justify-center text-[10px] font-bold">W</div>
-            <span>© {__BUILD_YEAR__} Windows Clean • {t.footer_note} • <a className="underline underline-offset-2" href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a></span>
+            <span>© {__BUILD_YEAR__} Windows Clean • {t.footer_note} • <a className="underline underline-offset-2" href={`${import.meta.env.BASE_URL}faq/`}>FAQ</a> • <a className="underline underline-offset-2" href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a></span>
           </div>
           <div className="flex items-center gap-2">
             {LANGS.map(l => (

@@ -31,6 +31,12 @@ Your text here. Use ## for headings, **bold**, lists, `code` and ``` code blocks
 Add `draft: true` to the header to keep an article unpublished. You can also create files directly on
 github.com (Add file → Create new file) without touching your computer.
 
+## SEO extras
+- **FAQ page:** edit `content/faq.json` (a list of `q` / `a` pairs). It becomes `/faq/` with FAQ schema.
+- **IndexNow:** `.github/workflows/indexnow.yml` tells Bing and others about new pages after each push. The key file in `public/` must stay.
+- **llms.txt:** generated automatically on every build.
+- Full checklist: `docs/LAUNCH-PLAYBOOK.md`.
+
 ## Download button and Pro button
 The Download button saves `https://www.windowsclean.space/download/Windows-Clean-setup.exe` directly. The file is
 served from this site (`public/download/`), so visitors never see GitHub. Two ways to put the file there:

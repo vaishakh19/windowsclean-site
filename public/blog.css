@@ -1,4 +1,4 @@
-:root{--bg:#FAF7F3;--bg2:#F2EFE9;--ink:#18181B;--soft:#52525B;--faint:#A1A1AA;--line:#E7E0D6;--accent:#B7D485}
+:root{--bg:#FAF7F3;--bg2:#F2EFE9;--ink:#18181B;--soft:#52525B;--faint:#6B6B75;--line:#E7E0D6;--accent:#B7D485}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased}
 a{color:inherit}
@@ -30,3 +30,8 @@ article img{max-width:100%;height:auto;border-radius:14px}
 .card p{margin:0;font-size:14px;color:var(--soft);line-height:1.5}
 footer{border-top:1px solid var(--line);padding:28px 20px;text-align:center;font-size:13px;color:var(--faint)}
 nav.links a.btn{color:#fff;margin-right:0}
+
+.faqlist{margin-top:24px}
+details.faq{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 18px;margin-bottom:10px}
+details.faq summary{cursor:pointer;font-weight:600;font-size:16px}
+details.faq div{margin-top:10px;color:#33333a;font-size:15px}

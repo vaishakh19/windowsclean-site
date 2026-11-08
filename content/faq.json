@@ -1,0 +1,34 @@
+[
+  {
+    "q": "What is Windows Clean?",
+    "a": "Windows Clean is a local disk space analyzer for Windows. You scan a drive or folder and explore it as a sunburst, a treemap or a file list, find large files, and identify duplicate files by SHA-256 content. It needs no account, no telemetry, no backend server and no administrator access."
+  },
+  {
+    "q": "Is Windows Clean free?",
+    "a": "Yes. Scanning, the sunburst, treemap and file list views, large-file listing, duplicate detection, size calculations and Power search are free. **Windows Clean Pro** is a one-time $12.99 payment with no subscription and no account. It adds Super Power search, full file paths, file actions, deleting to the Recycle Bin, and CSV export."
+  },
+  {
+    "q": "Does Windows Clean upload my files or collect data?",
+    "a": "No. Scanning happens on your PC, and there is no telemetry and no backend server. The only network use is verifying a Pro license with the payment provider (Dodo Payments), and downloading the Microsoft WebView2 runtime if your PC does not already have it."
+  },
+  {
+    "q": "Which versions of Windows does it support?",
+    "a": "Windows 10 and Windows 11, 64-bit. The installer needs no administrator permission and installs for your Windows account only. It requires the Microsoft WebView2 runtime; the installer sets it up if it is missing. On a PC with no internet connection, install Microsoft's Evergreen WebView2 Runtime first."
+  },
+  {
+    "q": "Why does Windows say \"Windows protected your PC\" when I run the installer?",
+    "a": "That is Windows SmartScreen. It appears for apps that are new or not yet code-signed. Windows Clean is a small independent project and the installer is not code-signed yet. Click **More info**, then **Run anyway**. You can check that your download is unchanged by comparing its SHA-256 hash with [SHA256SUMS.txt](/download/SHA256SUMS.txt). In PowerShell run `Get-FileHash .\\Windows-Clean-setup.exe -Algorithm SHA256`."
+  },
+  {
+    "q": "Is it safe to delete files with Windows Clean?",
+    "a": "Deleting files is a Pro feature. Files go to the Windows Recycle Bin by default, after you confirm. Windows Clean refuses to delete drive roots, the scanned folder itself, protected Windows locations, network (UNC) paths, and symlinks or junctions. Permanent delete is a separate command that also requires you to type DELETE. Every attempt is recorded in the Deletion History."
+  },
+  {
+    "q": "Why is the WinSxS folder so big, and can I delete it?",
+    "a": "Do not delete it by hand. WinSxS is the Windows component store, and its size in File Explorer is overstated because many files are hard links. See [Why is the WinSxS folder so big?](/articles/why-is-winsxs-so-big/) for the safe way to shrink it with DISM."
+  },
+  {
+    "q": "How do I contact support?",
+    "a": "Email [vaishakhdesktop@gmail.com](mailto:vaishakhdesktop@gmail.com)."
+  }
+]

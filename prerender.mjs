@@ -4,6 +4,7 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { SITE_URL, SITE_NAME, LANGS, DOWNLOAD_URL, SUPPORT_EMAIL } from "./site.config.mjs";
 import { loadArticles } from "./lib/articles.mjs";
+import { marked } from "marked";
 
 const dist = path.resolve("dist");
 const template = fs.readFileSync(path.join(dist, "index.html"), "utf8");
@@ -60,11 +61,16 @@ function head(lang) {
 }
 
 for (const lang of LANGS) {
+  // React hoists its own <link rel=preload> for every image; keep only our single hero preload.
+  const app = render(lang).replace(/<link rel="preload" as="image"[^>]*\/>/g, "");
+  const hero = app.match(/<img src="([^"]+)"[^>]*fetchPriority="high"|<img[^>]*fetchpriority="high"[^>]*src="([^"]+)"|<img src="([^"]+)"/i);
+  const heroSrc = hero && (hero[1] || hero[2] || hero[3]);
   let html = template
     .replace(/<html lang="[^"]*"/, `<html lang="${lang}"`)
     .replace(/<title>.*?<\/title>/s, "")
     .replace("</head>", `${head(lang)}\n  </head>`)
-    .replace('<div id="root"></div>', `<div id="root">${render(lang)}</div>`);
+    .replace('<div id="root"></div>', `<div id="root">${app}</div>`)
+    .replace("</head>", heroSrc ? `<link rel="preload" as="image" href="${heroSrc}" fetchpriority="high">\n  </head>` : "</head>");
   const out = lang === "en" ? dist : path.join(dist, lang);
   fs.mkdirSync(out, { recursive: true });
   fs.writeFileSync(path.join(out, "index.html"), html);
@@ -105,10 +111,10 @@ function page({ title, description, canonical, body, jsonld, ogType = "website",
 <body>
   <header class="top"><div class="in">
     <a class="brand" href="${BASE}"><b>W</b> ${SITE_NAME}</a>
-    <nav class="links"><a href="${BASE}">Home</a><a href="${BASE}articles/">Articles</a><a class="btn" href="${DOWNLOAD_URL}">Download Free</a></nav>
+    <nav class="links"><a href="${BASE}">Home</a><a href="${BASE}articles/">Articles</a><a href="${BASE}faq/">FAQ</a><a class="btn" href="${DOWNLOAD_URL}">Download Free</a></nav>
   </div></header>
 ${body}
-  <footer>© ${new Date().getFullYear()} ${SITE_NAME} · <a href="${BASE}">Home</a> · <a href="${BASE}articles/">Articles</a> · <a href="${BASE}feed.xml">RSS</a> · <a href="mailto:${SUPPORT_EMAIL}">${SUPPORT_EMAIL}</a></footer>
+  <footer>© ${new Date().getFullYear()} ${SITE_NAME} · <a href="${BASE}">Home</a> · <a href="${BASE}articles/">Articles</a> · <a href="${BASE}faq/">FAQ</a> · <a href="${BASE}feed.xml">RSS</a> · <a href="mailto:${SUPPORT_EMAIL}">${SUPPORT_EMAIL}</a></footer>
 </body>
 </html>`;
 }
@@ -167,10 +173,57 @@ for (const a of articles) {
   fs.writeFileSync(path.join(dist, "articles", "index.html"), page({ title: `Windows Storage Articles & Guides | ${SITE_NAME}`, description: "Practical guides on Windows disk space, what is safe to delete, and how to reclaim storage.", canonical: `${SITE_URL}/articles/`, body, jsonld }));
 }
 
+
+// ---------- FAQ page (content/faq.json) ----------
+const faq = JSON.parse(fs.readFileSync("content/faq.json", "utf8"));
+{
+  const items = faq.map((f) => `<details class="faq"><summary>${esc(f.q)}</summary><div>${marked.parseInline(f.a)}</div></details>`).join("\n    ");
+  const body = `  <main>
+    <div class="crumbs"><a href="${BASE}">Home</a> › FAQ</div>
+    <h1>Windows Clean FAQ</h1>
+    <p class="meta">Short, direct answers about the app, safety, pricing and installing.</p>
+    <div class="faqlist">
+    ${items}
+    </div>
+    ${cta}
+  </main>`;
+  const strip = (t) => t.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1").replace(/[*`]/g, "");
+  const jsonld = {
+    "@context": "https://schema.org",
+    "@graph": [
+      { "@type": "FAQPage", mainEntity: faq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: strip(f.a) } })) },
+      { "@type": "BreadcrumbList", itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
+        { "@type": "ListItem", position: 2, name: "FAQ", item: `${SITE_URL}/faq/` } ] },
+    ],
+  };
+  fs.mkdirSync(path.join(dist, "faq"), { recursive: true });
+  fs.writeFileSync(path.join(dist, "faq", "index.html"), page({ title: `Windows Clean FAQ: Free, Safe, Offline? | ${SITE_NAME}`, description: "Answers about Windows Clean: is it free, does it upload files, Windows 10/11 support, the SmartScreen warning, and safe deletion.", canonical: `${SITE_URL}/faq/`, body, jsonld }));
+}
+
+// ---------- llms.txt (a plain-text summary for AI assistants) ----------
+fs.writeFileSync(path.join(dist, "llms.txt"), [
+  `# ${SITE_NAME}`,
+  "",
+  `> ${seo.en.description}`,
+  "",
+  "## Pages",
+  `- [Home](${SITE_URL}/): what the app does, screenshots, free vs Pro`,
+  `- [FAQ](${SITE_URL}/faq/): pricing, privacy, Windows support, SmartScreen, safe deletion`,
+  `- [Articles](${SITE_URL}/articles/): guides on Windows disk space`,
+  "",
+  "## Articles",
+  ...articles.map((a) => `- [${a.title}](${SITE_URL}/articles/${a.slug}/): ${a.description}`),
+  "",
+  `## Contact`,
+  `- ${SUPPORT_EMAIL}`,
+  "",
+].join("\n"));
+
 const rssItems = articles.map((a) => `    <item><title>${esc(a.title)}</title><link>${SITE_URL}/articles/${a.slug}/</link><guid>${SITE_URL}/articles/${a.slug}/</guid><pubDate>${new Date(a.date + "T00:00:00Z").toUTCString()}</pubDate><description>${esc(a.description)}</description></item>`).join("\n");
 fs.writeFileSync(path.join(dist, "feed.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0"><channel>\n    <title>${SITE_NAME} articles</title><link>${SITE_URL}/articles/</link><description>Windows storage guides</description>\n${rssItems}\n</channel></rss>\n`);
 
-const articleUrls = [{ loc: `${SITE_URL}/articles/`, lastmod: articles[0]?.date }, ...articles.map((a) => ({ loc: `${SITE_URL}/articles/${a.slug}/`, lastmod: a.date }))]
+const articleUrls = [{ loc: `${SITE_URL}/faq/` }, { loc: `${SITE_URL}/articles/`, lastmod: articles[0]?.date }, ...articles.map((a) => ({ loc: `${SITE_URL}/articles/${a.slug}/`, lastmod: a.date }))]
   .map((u) => `  <url>\n    <loc>${u.loc}</loc>${u.lastmod ? `\n    <lastmod>${u.lastmod}</lastmod>` : ""}\n  </url>`).join("\n");
 
 const today = new Date().toISOString().slice(0, 10);
