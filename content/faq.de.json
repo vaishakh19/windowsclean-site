@@ -1,0 +1,34 @@
+[
+  {
+    "q": "Was ist Windows Clean?",
+    "a": "Windows Clean ist ein lokaler Speicherplatz-Analyzer für Windows. Du scannst ein Laufwerk oder einen Ordner und erkundest ihn als Sunburst, Treemap oder Dateiliste, findest große Dateien und erkennst Duplikate anhand des SHA-256-Inhalts. Es braucht kein Konto, keine Telemetrie, keinen Backend-Server und keine Administratorrechte."
+  },
+  {
+    "q": "Ist Windows Clean kostenlos?",
+    "a": "Ja. Scannen, die Ansichten Sunburst, Treemap und Dateiliste, die Liste großer Dateien, die Duplikaterkennung, Größenberechnung und die Power-Suche sind kostenlos. **Windows Clean Pro** ist eine einmalige Zahlung von 12,99 $ ohne Abo und ohne Konto. Es ergänzt Super-Power-Suche, vollständige Dateipfade, Dateiaktionen, Löschen in den Papierkorb und CSV-Export."
+  },
+  {
+    "q": "Lädt Windows Clean meine Dateien hoch oder sammelt es Daten?",
+    "a": "Nein. Das Scannen läuft auf deinem PC, es gibt keine Telemetrie und keinen Backend-Server. Netzwerk wird nur genutzt, um eine Pro-Lizenz beim Zahlungsanbieter (Dodo Payments) zu prüfen und um die Microsoft-WebView2-Laufzeit herunterzuladen, falls sie auf deinem PC fehlt."
+  },
+  {
+    "q": "Welche Windows-Versionen werden unterstützt?",
+    "a": "Windows 10 und Windows 11, 64-Bit. Der Installer braucht keine Administratorrechte und installiert nur für dein Windows-Konto. Erforderlich ist die Microsoft-WebView2-Laufzeit; der Installer richtet sie ein, falls sie fehlt. Auf einem PC ohne Internetverbindung installierst du zuerst die Evergreen-WebView2-Laufzeit von Microsoft."
+  },
+  {
+    "q": "Warum zeigt Windows „Der PC wurde durch Windows geschützt“, wenn ich den Installer starte?",
+    "a": "Das ist Windows SmartScreen. Es erscheint bei neuen Apps oder Apps ohne Code-Signatur. Windows Clean ist ein kleines unabhängiges Projekt, und der Installer ist noch nicht code-signiert. Klicke auf **Weitere Informationen** und dann auf **Trotzdem ausführen**. Ob dein Download unverändert ist, prüfst du, indem du seinen SHA-256-Hash mit [SHA256SUMS.txt](/download/SHA256SUMS.txt) vergleichst. In PowerShell: `Get-FileHash .\\Windows-Clean-setup.exe -Algorithm SHA256`."
+  },
+  {
+    "q": "Ist es sicher, mit Windows Clean Dateien zu löschen?",
+    "a": "Das Löschen ist eine Pro-Funktion. Dateien gehen standardmäßig in den Windows-Papierkorb, nachdem du bestätigt hast. Windows Clean weigert sich, Laufwerks-Stammordner, den gescannten Ordner selbst, geschützte Windows-Orte, Netzwerkpfade (UNC) sowie Symlinks und Junctions zu löschen. Endgültiges Löschen ist ein eigener Befehl, bei dem du zusätzlich DELETE eintippen musst. Jeder Versuch wird im Löschverlauf protokolliert."
+  },
+  {
+    "q": "Warum ist der WinSxS-Ordner so groß, und darf ich ihn löschen?",
+    "a": "Lösche ihn nicht von Hand. WinSxS ist der Windows-Komponentenspeicher, und seine Größe im Explorer wird zu hoch angezeigt, weil viele Dateien Hardlinks sind. Wie du ihn sicher mit DISM verkleinerst, steht in [Warum ist der WinSxS-Ordner so groß?](/articles/why-is-winsxs-so-big/)."
+  },
+  {
+    "q": "Wie erreiche ich den Support?",
+    "a": "Schreib an [vaishakhdesktop@gmail.com](mailto:vaishakhdesktop@gmail.com)."
+  }
+]

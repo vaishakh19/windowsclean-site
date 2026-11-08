@@ -651,6 +651,19 @@ const IMG_DIMS = new Map<string, [number, number]>([
   [pricingImg, [1217, 508]],
 ]);
 
+// Use the translated title/description when this article has one in the current language.
+function localizeArticle(a: (typeof ARTICLES)[number], lang: Lang) {
+  const tr = lang !== "en" ? a.translations[lang as "de" | "fr" | "es" | "ja"] : undefined;
+  return {
+    slug: a.slug, date: a.date,
+    minutes: tr?.minutes ?? a.minutes,
+    title: tr?.title ?? a.title,
+    description: tr?.description ?? a.description,
+    category: tr?.category ?? a.category,
+    href: `${import.meta.env.BASE_URL}${tr ? lang + "/" : ""}articles/${a.slug}/`,
+  };
+}
+
 function ScreenshotFrame({ src, label, annotations, children, priority }: { src: string; label: string; annotations?: { text: string; pos: string }[]; children?: React.ReactNode; priority?: boolean }) {
   const [iw, ih] = IMG_DIMS.get(src) ?? [1600, 1000];
   return (
@@ -732,7 +745,7 @@ export default function App({ initialLang }: { initialLang?: Lang } = {}) {
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
-    return ARTICLES.filter(a => !q || a.title.toLowerCase().includes(q) || a.description.toLowerCase().includes(q));
+    return ARTICLES.map(a => localizeArticle(a, lang)).filter(a => !q || a.title.toLowerCase().includes(q) || a.description.toLowerCase().includes(q));
   }, [search, lang]);
 
   const handlePro = () => {
@@ -1151,7 +1164,7 @@ export default function App({ initialLang }: { initialLang?: Lang } = {}) {
           </div>
           <div className="grid md:grid-cols-3 gap-4">
             {filtered.slice(0, 6).map(a => (
-              <a key={a.slug} href={`${import.meta.env.BASE_URL}articles/${a.slug}/`} className="rounded-[20px] bg-white border border-[var(--line)] p-5 shadow-[var(--shadow)] hover:shadow-[var(--shadow-lg)] transition flex flex-col">
+              <a key={a.slug} href={a.href} className="rounded-[20px] bg-white border border-[var(--line)] p-5 shadow-[var(--shadow)] hover:shadow-[var(--shadow-lg)] transition flex flex-col">
                 <div className="flex items-center gap-2 mb-3">
                   <span className="px-2.5 py-1 rounded-full bg-[var(--bg-2)] border border-[var(--line)] text-[10px] font-semibold tracking-widest uppercase">{a.category}</span>
                   <span className="text-[11px] text-[var(--ink-faint)]">{a.date} • {a.minutes} {t.min_read}</span>
@@ -1198,7 +1211,7 @@ export default function App({ initialLang }: { initialLang?: Lang } = {}) {
         <div className="mx-auto max-w-[1280px] px-5 md:px-7 flex flex-wrap items-center justify-between gap-4 text-[11px] text-[var(--ink-faint)]">
           <div className="flex items-center gap-3">
             <div className="w-6 h-6 rounded-full bg-[var(--ink)] text-white flex items-center justify-center text-[10px] font-bold">W</div>
-            <span>© {__BUILD_YEAR__} Windows Clean • {t.footer_note} • <a className="underline underline-offset-2" href={`${import.meta.env.BASE_URL}faq/`}>FAQ</a> • <a className="underline underline-offset-2" href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a></span>
+            <span>© {__BUILD_YEAR__} Windows Clean • {t.footer_note} • <a className="underline underline-offset-2" href={`${import.meta.env.BASE_URL}${lang === "en" ? "" : lang + "/"}faq/`}>FAQ</a> • <a className="underline underline-offset-2" href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a></span>
           </div>
           <div className="flex items-center gap-2">
             {LANGS.map(l => (

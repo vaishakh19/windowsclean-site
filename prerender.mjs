@@ -4,6 +4,7 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { SITE_URL, SITE_NAME, LANGS, DOWNLOAD_URL, SUPPORT_EMAIL } from "./site.config.mjs";
 import { loadArticles } from "./lib/articles.mjs";
+import { LANG_META, UI } from "./lib/i18n.mjs";
 import { marked } from "marked";
 
 const dist = path.resolve("dist");
@@ -77,15 +78,46 @@ for (const lang of LANGS) {
 }
 
 
-// ---------- Articles (content/articles/*.md) ----------
+// ---------- Articles + FAQ, in every language ----------
 const BASE = new URL(SITE_URL).pathname.replace(/\/?$/, "/");
 const articles = loadArticles("content/articles");
-const fmtDate = (d) => new Date(d + "T00:00:00Z").toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" });
 const abs = (p) => (/^https?:/.test(p) ? p : `${SITE_URL}/${p.replace(/^\//, "")}`);
+const fmtDate = (d, l) => new Date(d + "T00:00:00Z").toLocaleDateString(LANG_META[l].locale, { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" });
 
-function page({ title, description, canonical, body, jsonld, ogType = "website", ogImage: img = ogImage }) {
+// path (for links) and absolute URL (for canonicals/sitemap) of a page in a language
+const P = (l, rest = "") => `${BASE}${l === "en" ? "" : l + "/"}${rest}`;
+const U = (l, rest = "") => `${SITE_URL}/${l === "en" ? "" : l + "/"}${rest}`;
+
+const faqs = {};
+for (const l of LANGS) {
+  const f = l === "en" ? "content/faq.json" : `content/faq.${l}.json`;
+  if (fs.existsSync(f)) faqs[l] = JSON.parse(fs.readFileSync(f, "utf8"));
+}
+const inLang = (a, l) => (l === "en" ? a : a.translations[l] && { ...a, ...a.translations[l] });
+const articlesIn = (l) => articles.map((a) => inLang(a, l)).filter(Boolean);
+const hasArticles = (l) => articlesIn(l).length > 0;
+const navLang = (l, ok) => (ok ? l : "en"); // fall back to English pages that exist
+
+// alts = { en: "articles/x/", de: "de/..." } -> which languages this page exists in
+function switcher(lang, alts) {
+  const items = LANGS.map((l) => {
+    const m = LANG_META[l];
+    if (l === lang) return `<li><a class="on" href="${P(l, alts[l])}" hreflang="${l}" lang="${l}"><span class="code">${m.code}</span><span class="nm">${m.name}</span><span class="ck">✓</span></a></li>`;
+    if (alts[l] !== undefined) return `<li><a href="${P(l, alts[l])}" hreflang="${l}" lang="${l}"><span class="code">${m.code}</span><span class="nm">${m.name}</span></a></li>`;
+    return `<li class="off" title="${esc(UI[lang].notTranslated)}"><span class="code">${m.code}</span><span class="nm">${m.name}</span><em>${esc(UI[lang].notTranslated)}</em></li>`;
+  }).join("");
+  return `<details class="lang"><summary aria-label="${esc(UI[lang].language)}"><span class="code">${LANG_META[lang].code}</span><span class="nm">${LANG_META[lang].name}</span><span class="car">▾</span></summary><ul>${items}</ul></details>`;
+}
+
+function page({ lang, title, description, rest, alts, body, jsonld, ogType = "website", ogImage: img = ogImage }) {
+  const t = UI[lang];
+  const canonical = U(lang, rest);
+  const hre = LANGS.filter((l) => alts[l] !== undefined).map((l) => `<link rel="alternate" hreflang="${l}" href="${U(l, alts[l])}">`).join("\n  ");
+  const xdef = alts.en !== undefined ? `<link rel="alternate" hreflang="x-default" href="${U("en", alts.en)}">` : "";
+  const nA = P(navLang(lang, hasArticles(lang)), "articles/");
+  const nF = P(navLang(lang, !!faqs[lang]), "faq/");
   return `<!doctype html>
-<html lang="en">
+<html lang="${lang}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -93,6 +125,8 @@ function page({ title, description, canonical, body, jsonld, ogType = "website",
   <meta name="description" content="${esc(description)}">
   <meta name="robots" content="index,follow,max-image-preview:large">
   <link rel="canonical" href="${canonical}">
+  ${hre}
+  ${xdef}
   <link rel="icon" type="image/svg+xml" href="${BASE}favicon.svg">
   <link rel="alternate" type="application/rss+xml" title="${SITE_NAME} articles" href="${SITE_URL}/feed.xml">
   <meta property="og:type" content="${ogType}">
@@ -101,6 +135,7 @@ function page({ title, description, canonical, body, jsonld, ogType = "website",
   <meta property="og:description" content="${esc(description)}">
   <meta property="og:url" content="${canonical}">
   <meta property="og:image" content="${img}">
+  <meta property="og:locale" content="${LANG_META[lang].og}">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -110,135 +145,127 @@ function page({ title, description, canonical, body, jsonld, ogType = "website",
 </head>
 <body>
   <header class="top"><div class="in">
-    <a class="brand" href="${BASE}"><b>W</b> ${SITE_NAME}</a>
-    <nav class="links"><a href="${BASE}">Home</a><a href="${BASE}articles/">Articles</a><a href="${BASE}faq/">FAQ</a><a class="btn" href="${DOWNLOAD_URL}">Download Free</a></nav>
+    <a class="brand" href="${P(lang)}"><b>W</b> <span class="bn">${SITE_NAME}</span></a>
+    <nav class="links"><a href="${P(lang)}">${t.home}</a><a href="${nA}">${t.articles}</a><a href="${nF}">${t.faq}</a>${switcher(lang, alts)}<a class="btn" href="${DOWNLOAD_URL}">${t.download}</a></nav>
   </div></header>
 ${body}
-  <footer>© ${new Date().getFullYear()} ${SITE_NAME} · <a href="${BASE}">Home</a> · <a href="${BASE}articles/">Articles</a> · <a href="${BASE}faq/">FAQ</a> · <a href="${BASE}feed.xml">RSS</a> · <a href="mailto:${SUPPORT_EMAIL}">${SUPPORT_EMAIL}</a></footer>
+  <footer>© ${new Date().getFullYear()} ${SITE_NAME} · <a href="${P(lang)}">${t.home}</a> · <a href="${nA}">${t.articles}</a> · <a href="${nF}">${t.faq}</a> · <a href="${BASE}feed.xml">RSS</a> · <a href="mailto:${SUPPORT_EMAIL}">${SUPPORT_EMAIL}</a></footer>
+  <script>document.addEventListener("click",function(e){document.querySelectorAll("details.lang[open]").forEach(function(d){if(!d.contains(e.target))d.open=false})})</script>
 </body>
 </html>`;
 }
 
-const cta = `<div class="cta"><strong>See what's taking up your disk space</strong><p>Windows Clean is a free, offline disk space analyzer for Windows. No cloud, no telemetry.</p><a class="btn" href="${DOWNLOAD_URL}">Download for Windows — Free</a></div>`;
+const ctaFor = (l) => `<div class="cta"><strong>${esc(UI[l].ctaTitle)}</strong><p>${esc(UI[l].ctaText)}</p><a class="btn" href="${DOWNLOAD_URL}">${esc(UI[l].ctaBtn)}</a></div>`;
+const write = (rel, html) => { const f = path.join(dist, rel, "index.html"); fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, html); };
+
+// where each article / index / FAQ exists
+const articleAlts = (a) => Object.fromEntries(LANGS.filter((l) => l === "en" || a.translations[l]).map((l) => [l, `articles/${a.slug}/`]));
+const indexAlts = Object.fromEntries(LANGS.filter(hasArticles).map((l) => [l, "articles/"]));
+const faqAlts = Object.fromEntries(LANGS.filter((l) => faqs[l]).map((l) => [l, "faq/"]));
 
 for (const a of articles) {
-  const url = `${SITE_URL}/articles/${a.slug}/`;
-  const body = `  <main><article>
-    <div class="crumbs"><a href="${BASE}">Home</a> › <a href="${BASE}articles/">Articles</a></div>
-    <h1>${esc(a.title)}</h1>
-    <p class="meta"><span class="tag">${esc(a.category)}</span>${fmtDate(a.date)} · ${a.minutes} min read</p>
-    ${a.html}
-    ${cta}
+  const alts = articleAlts(a);
+  for (const lang of Object.keys(alts)) {
+    const e = inLang(a, lang), t = UI[lang];
+    const url = U(lang, `articles/${a.slug}/`);
+    const body = `  <main><article>
+    <div class="crumbs"><a href="${P(lang)}">${t.home}</a> › <a href="${P(lang, "articles/")}">${t.articles}</a></div>
+    <h1>${esc(e.title)}</h1>
+    <p class="meta"><span class="tag">${esc(e.category)}</span>${fmtDate(e.date, lang)} · ${t.readTime(e.minutes)}</p>
+    ${e.html}
+    ${ctaFor(lang)}
   </article></main>`;
-  const jsonld = {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "BlogPosting",
-        headline: a.title,
-        description: a.description,
-        datePublished: a.date,
-        dateModified: a.date,
-        mainEntityOfPage: url,
-        image: a.image ? abs(a.image) : ogImage,
-        author: { "@type": "Organization", name: SITE_NAME },
-        publisher: { "@type": "Organization", name: SITE_NAME, logo: { "@type": "ImageObject", url: `${SITE_URL}/favicon.svg` } },
-      },
-      {
-        "@type": "BreadcrumbList",
-        itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
-          { "@type": "ListItem", position: 2, name: "Articles", item: `${SITE_URL}/articles/` },
-          { "@type": "ListItem", position: 3, name: a.title, item: url },
-        ],
-      },
-    ],
-  };
-  const dir = path.join(dist, "articles", a.slug);
-  fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(path.join(dir, "index.html"), page({ title: `${a.title} | ${SITE_NAME}`, description: a.description, canonical: url, body, jsonld, ogType: "article", ogImage: a.image ? abs(a.image) : ogImage }));
+    const img = e.image ? abs(e.image) : ogImage;
+    const jsonld = {
+      "@context": "https://schema.org",
+      "@graph": [
+        { "@type": "BlogPosting", headline: e.title, description: e.description, inLanguage: lang, datePublished: e.date, dateModified: e.date, mainEntityOfPage: url, image: img,
+          author: { "@type": "Organization", name: SITE_NAME },
+          publisher: { "@type": "Organization", name: SITE_NAME, logo: { "@type": "ImageObject", url: `${SITE_URL}/favicon.svg` } } },
+        { "@type": "BreadcrumbList", itemListElement: [
+          { "@type": "ListItem", position: 1, name: t.home, item: U(lang) },
+          { "@type": "ListItem", position: 2, name: t.articles, item: U(lang, "articles/") },
+          { "@type": "ListItem", position: 3, name: e.title, item: url } ] },
+      ],
+    };
+    write(P(lang, `articles/${a.slug}/`).slice(BASE.length), page({ lang, title: `${e.title} | ${SITE_NAME}`, description: e.description, rest: `articles/${a.slug}/`, alts, body, jsonld, ogType: "article", ogImage: img }));
+  }
 }
 
-{
-  const cards = articles.map((a) => `<a class="card" href="${BASE}articles/${a.slug}/"><span class="tag">${esc(a.category)}</span><span class="meta">${fmtDate(a.date)} · ${a.minutes} min read</span><h2>${esc(a.title)}</h2><p>${esc(a.description)}</p></a>`).join("\n    ");
+for (const lang of LANGS.filter(hasArticles)) {
+  const t = UI[lang];
+  const cards = articlesIn(lang).map((e) => `<a class="card" href="${P(lang, `articles/${e.slug}/`)}"><span class="tag">${esc(e.category)}</span><span class="meta">${fmtDate(e.date, lang)} · ${t.readTime(e.minutes)}</span><h2>${esc(e.title)}</h2><p>${esc(e.description)}</p></a>`).join("\n    ");
   const body = `  <main class="wide">
-    <h1>Windows storage articles</h1>
-    <p class="meta">Practical guides on disk space, cleanup and what is safe to delete.</p>
+    <h1>${esc(t.idxTitle)}</h1>
+    <p class="meta">${esc(t.idxSub)}</p>
     <div class="grid">
-    ${cards || "<p>No articles yet.</p>"}
+    ${cards}
     </div>
   </main>`;
-  const jsonld = { "@context": "https://schema.org", "@type": "CollectionPage", name: `${SITE_NAME} articles`, url: `${SITE_URL}/articles/` };
-  fs.mkdirSync(path.join(dist, "articles"), { recursive: true });
-  fs.writeFileSync(path.join(dist, "articles", "index.html"), page({ title: `Windows Storage Articles & Guides | ${SITE_NAME}`, description: "Practical guides on Windows disk space, what is safe to delete, and how to reclaim storage.", canonical: `${SITE_URL}/articles/`, body, jsonld }));
+  const jsonld = { "@context": "https://schema.org", "@type": "CollectionPage", name: `${SITE_NAME} – ${t.articles}`, inLanguage: lang, url: U(lang, "articles/") };
+  write(P(lang, "articles/").slice(BASE.length), page({ lang, title: `${t.idxMetaTitle} | ${SITE_NAME}`, description: t.idxMetaDesc, rest: "articles/", alts: indexAlts, body, jsonld }));
 }
 
-
-// ---------- FAQ page (content/faq.json) ----------
-const faq = JSON.parse(fs.readFileSync("content/faq.json", "utf8"));
-{
-  const items = faq.map((f) => `<details class="faq"><summary>${esc(f.q)}</summary><div>${marked.parseInline(f.a)}</div></details>`).join("\n    ");
+const strip = (x) => x.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1").replace(/[*`]/g, "");
+for (const lang of Object.keys(faqs)) {
+  const t = UI[lang], faq = faqs[lang];
+  // article links in FAQ answers point to the translated article when it exists
+  const fixLinks = (x) => x.replace(/\]\(\/articles\/([^/)]+)\/\)/g, (m, slug) => {
+    const a = articles.find((z) => z.slug === slug);
+    const l = lang === "en" || a?.translations[lang] ? lang : "en";
+    return `](${P(l, `articles/${slug}/`)})`;
+  });
+  const items = faq.map((f) => `<details class="faq"><summary>${esc(f.q)}</summary><div>${marked.parseInline(fixLinks(f.a))}</div></details>`).join("\n    ");
   const body = `  <main>
-    <div class="crumbs"><a href="${BASE}">Home</a> › FAQ</div>
-    <h1>Windows Clean FAQ</h1>
-    <p class="meta">Short, direct answers about the app, safety, pricing and installing.</p>
+    <div class="crumbs"><a href="${P(lang)}">${t.home}</a> › ${t.faq}</div>
+    <h1>${esc(t.faqH1)}</h1>
+    <p class="meta">${esc(t.faqSub)}</p>
     <div class="faqlist">
     ${items}
     </div>
-    ${cta}
+    ${ctaFor(lang)}
   </main>`;
-  const strip = (t) => t.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1").replace(/[*`]/g, "");
   const jsonld = {
     "@context": "https://schema.org",
     "@graph": [
-      { "@type": "FAQPage", mainEntity: faq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: strip(f.a) } })) },
+      { "@type": "FAQPage", inLanguage: lang, mainEntity: faq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: strip(f.a) } })) },
       { "@type": "BreadcrumbList", itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
-        { "@type": "ListItem", position: 2, name: "FAQ", item: `${SITE_URL}/faq/` } ] },
+        { "@type": "ListItem", position: 1, name: t.home, item: U(lang) },
+        { "@type": "ListItem", position: 2, name: t.faq, item: U(lang, "faq/") } ] },
     ],
   };
-  fs.mkdirSync(path.join(dist, "faq"), { recursive: true });
-  fs.writeFileSync(path.join(dist, "faq", "index.html"), page({ title: `Windows Clean FAQ: Free, Safe, Offline? | ${SITE_NAME}`, description: "Answers about Windows Clean: is it free, does it upload files, Windows 10/11 support, the SmartScreen warning, and safe deletion.", canonical: `${SITE_URL}/faq/`, body, jsonld }));
+  write(P(lang, "faq/").slice(BASE.length), page({ lang, title: `${t.faqMetaTitle} | ${SITE_NAME}`, description: t.faqMetaDesc, rest: "faq/", alts: faqAlts, body, jsonld }));
 }
 
-// ---------- llms.txt (a plain-text summary for AI assistants) ----------
+// ---------- llms.txt, RSS (English), sitemap, robots, 404 ----------
 fs.writeFileSync(path.join(dist, "llms.txt"), [
-  `# ${SITE_NAME}`,
-  "",
-  `> ${seo.en.description}`,
-  "",
+  `# ${SITE_NAME}`, "", `> ${seo.en.description}`, "",
   "## Pages",
   `- [Home](${SITE_URL}/): what the app does, screenshots, free vs Pro`,
   `- [FAQ](${SITE_URL}/faq/): pricing, privacy, Windows support, SmartScreen, safe deletion`,
   `- [Articles](${SITE_URL}/articles/): guides on Windows disk space`,
-  "",
-  "## Articles",
+  `- Also available in: ${LANGS.filter((l) => l !== "en").map((l) => `${LANG_META[l].name} (${SITE_URL}/${l}/)`).join(", ")}`,
+  "", "## Articles",
   ...articles.map((a) => `- [${a.title}](${SITE_URL}/articles/${a.slug}/): ${a.description}`),
-  "",
-  `## Contact`,
-  `- ${SUPPORT_EMAIL}`,
-  "",
+  "", "## Contact", `- ${SUPPORT_EMAIL}`, "",
 ].join("\n"));
 
 const rssItems = articles.map((a) => `    <item><title>${esc(a.title)}</title><link>${SITE_URL}/articles/${a.slug}/</link><guid>${SITE_URL}/articles/${a.slug}/</guid><pubDate>${new Date(a.date + "T00:00:00Z").toUTCString()}</pubDate><description>${esc(a.description)}</description></item>`).join("\n");
 fs.writeFileSync(path.join(dist, "feed.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0"><channel>\n    <title>${SITE_NAME} articles</title><link>${SITE_URL}/articles/</link><description>Windows storage guides</description>\n${rssItems}\n</channel></rss>\n`);
 
-const articleUrls = [{ loc: `${SITE_URL}/faq/` }, { loc: `${SITE_URL}/articles/`, lastmod: articles[0]?.date }, ...articles.map((a) => ({ loc: `${SITE_URL}/articles/${a.slug}/`, lastmod: a.date }))]
-  .map((u) => `  <url>\n    <loc>${u.loc}</loc>${u.lastmod ? `\n    <lastmod>${u.lastmod}</lastmod>` : ""}\n  </url>`).join("\n");
-
 const today = new Date().toISOString().slice(0, 10);
-const sm = LANGS.map(
-  (l) =>
-    `  <url>\n    <loc>${urlFor(l)}</loc>\n    <lastmod>${today}</lastmod>\n` +
-    [...LANGS, "x-default"]
-      .map((a) => `    <xhtml:link rel="alternate" hreflang="${a}" href="${urlFor(a === "x-default" ? "en" : a)}"/>`)
-      .join("\n") +
-    `\n  </url>`,
-).join("\n");
-fs.writeFileSync(
-  path.join(dist, "sitemap.xml"),
-  `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${sm}\n${articleUrls}\n</urlset>\n`,
-);
+const xlinks = (alts) => [...LANGS.filter((l) => alts[l] !== undefined).map((l) => [l, U(l, alts[l])]), ...(alts.en !== undefined ? [["x-default", U("en", alts.en)]] : [])]
+  .map(([h, u]) => `    <xhtml:link rel="alternate" hreflang="${h}" href="${u}"/>`).join("\n");
+const entry = (loc, alts, lastmod) => `  <url>\n    <loc>${loc}</loc>${lastmod ? `\n    <lastmod>${lastmod}</lastmod>` : ""}\n${xlinks(alts)}\n  </url>`;
+const homeAlts = Object.fromEntries(LANGS.map((l) => [l, ""]));
+const urls = [
+  ...LANGS.map((l) => entry(U(l), homeAlts, today)),
+  ...Object.keys(faqAlts).map((l) => entry(U(l, "faq/"), faqAlts, today)),
+  ...Object.keys(indexAlts).map((l) => entry(U(l, "articles/"), indexAlts, articles[0]?.date)),
+  ...articles.flatMap((a) => { const al = articleAlts(a); return Object.keys(al).map((l) => entry(U(l, al[l]), al, inLang(a, l).date)); }),
+];
+fs.writeFileSync(path.join(dist, "sitemap.xml"),
+  `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${urls.join("\n")}\n</urlset>\n`);
 fs.writeFileSync(path.join(dist, "robots.txt"), `User-agent: *\nAllow: /\n\nSitemap: ${SITE_URL}/sitemap.xml\n`);
 fs.copyFileSync(path.join(dist, "index.html"), path.join(dist, "404.html"));
-console.log("Prerendered:", LANGS.join(", "));
+console.log("Prerendered:", LANGS.join(", "), "| articles:", articles.length, "| FAQ languages:", Object.keys(faqs).join(", "));

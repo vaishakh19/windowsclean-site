@@ -31,6 +31,19 @@ Your text here. Use ## for headings, **bold**, lists, `code` and ``` code blocks
 Add `draft: true` to the header to keep an article unpublished. You can also create files directly on
 github.com (Add file → Create new file) without touching your computer.
 
+## Translating articles and the FAQ
+Put the translation next to the English file, with the language before `.md`:
+
+```
+content/articles/c-drive-full.md       <- English original (required)
+content/articles/c-drive-full.de.md    <- German     (.fr French, .es Spanish, .ja Japanese)
+```
+- Use the same header fields (`title`, `description`, `date`, `category`) written in that language.
+- Each language gets its own address (`/de/articles/c-drive-full/`), a language dropdown, and `hreflang` tags so Google shows the right version.
+- A language with no translation shows greyed out in the dropdown. Nothing breaks.
+- FAQ: `content/faq.json` is English; `content/faq.de.json`, `.fr`, `.es`, `.ja` are the translations.
+- Interface words on these pages (menu, "min read", buttons) are in `lib/i18n.mjs`.
+
 ## SEO extras
 - **FAQ page:** edit `content/faq.json` (a list of `q` / `a` pairs). It becomes `/faq/` with FAQ schema.
 - **IndexNow:** `.github/workflows/indexnow.yml` tells Bing and others about new pages after each push. The key file in `public/` must stay.

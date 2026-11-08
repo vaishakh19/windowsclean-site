@@ -1,0 +1,34 @@
+[
+  {
+    "q": "¿Qué es Windows Clean?",
+    "a": "Windows Clean es un analizador local de espacio en disco para Windows. Escaneas una unidad o carpeta y la exploras como sunburst, treemap o lista de archivos, encuentras archivos grandes e identificas duplicados por contenido SHA-256. No necesita cuenta, telemetría, servidor ni permisos de administrador."
+  },
+  {
+    "q": "¿Windows Clean es gratis?",
+    "a": "Sí. El escaneo, las vistas sunburst, treemap y lista de archivos, el listado de archivos grandes, la detección de duplicados, el cálculo de tamaños y la búsqueda Power son gratuitos. **Windows Clean Pro** es un pago único de 12,99 $, sin suscripción ni cuenta. Añade la búsqueda Super Power, rutas completas, acciones sobre archivos, borrado a la Papelera y exportación CSV."
+  },
+  {
+    "q": "¿Windows Clean sube mis archivos o recopila datos?",
+    "a": "No. El escaneo ocurre en tu PC, sin telemetría ni servidor. La red solo se usa para verificar una licencia Pro con el proveedor de pagos (Dodo Payments) y para descargar el runtime Microsoft WebView2 si tu PC no lo tiene."
+  },
+  {
+    "q": "¿Qué versiones de Windows admite?",
+    "a": "Windows 10 y Windows 11, de 64 bits. El instalador no pide permisos de administrador y se instala solo para tu cuenta de Windows. Requiere el runtime Microsoft WebView2; el instalador lo configura si falta. En un PC sin conexión a internet, instala antes el runtime Evergreen WebView2 de Microsoft."
+  },
+  {
+    "q": "¿Por qué Windows muestra «Windows protegió su PC» al ejecutar el instalador?",
+    "a": "Es Windows SmartScreen. Aparece en aplicaciones nuevas o sin firma de código. Windows Clean es un pequeño proyecto independiente y el instalador aún no está firmado. Haz clic en **Más información** y luego en **Ejecutar de todas formas**. Para comprobar que tu descarga no ha cambiado, compara su hash SHA-256 con [SHA256SUMS.txt](/download/SHA256SUMS.txt). En PowerShell: `Get-FileHash .\\Windows-Clean-setup.exe -Algorithm SHA256`."
+  },
+  {
+    "q": "¿Es seguro borrar archivos con Windows Clean?",
+    "a": "Borrar archivos es una función Pro. Por defecto van a la Papelera de Windows, tras tu confirmación. Windows Clean se niega a borrar raíces de unidad, la propia carpeta escaneada, ubicaciones protegidas de Windows, rutas de red (UNC) y enlaces simbólicos o uniones. El borrado permanente es un comando aparte que además exige escribir DELETE. Cada intento queda registrado en el Historial de borrados."
+  },
+  {
+    "q": "¿Por qué es tan grande la carpeta WinSxS y puedo borrarla?",
+    "a": "No la borres a mano. WinSxS es el almacén de componentes de Windows, y su tamaño en el Explorador se exagera porque muchos archivos son vínculos físicos. Consulta [¿Por qué es tan grande la carpeta WinSxS?](/articles/why-is-winsxs-so-big/) para reducirla con seguridad con DISM."
+  },
+  {
+    "q": "¿Cómo contacto con soporte?",
+    "a": "Escribe a [vaishakhdesktop@gmail.com](mailto:vaishakhdesktop@gmail.com)."
+  }
+]
