@@ -12,4 +12,4 @@ export const DOWNLOAD_URL = `${SITE_URL}/download/${DOWNLOAD_FILE}`;
 
 // >>> PRO CHECKOUT <<<  Paste your Dodo hosted checkout URL (https://checkout.dodopayments.com/...) once Pro is
 // live. While empty, the "Get Pro" button just shows "coming soon" and nobody can buy a product that doesn't exist yet.
-export const CHECKOUT_URL = "";
+export const CHECKOUT_URL = "https://checkout.dodopayments.com/buy/pdt_0NqUxj3xKQdTRco31F7Lo?quantity=1";
