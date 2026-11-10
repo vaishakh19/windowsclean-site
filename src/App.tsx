@@ -121,7 +121,7 @@ const dict = {
       "No renewals, No subscription, No account",
       "Purchased badge — lifetime",
     ],
-    pro_trust: "Nothing leaves your PC. Offline and read-only. System Protected warnings. Safe deletion only. 2.4MB installer, uninstalls cleanly.",
+    pro_trust: "Nothing leaves your PC. Offline and read-only. System Protected warnings. Safe deletion only. 3MB installer, uninstalls cleanly.",
     pro_cta: "Get Pro — $12.99 once",
     cases_kicker: "05 — REAL SAVINGS",
     cases_title: "Real people, real space reclaimed.",
@@ -139,7 +139,7 @@ const dict = {
     articles_sub: "Practical storage wisdom. No fluff.",
     search_ph: "Search guides...",
     final_title: "Ready to see what's hiding?",
-    final_sub: "Free during beta. 2.4MB download. Uninstalls cleanly. No admin for user folders.",
+    final_sub: "Free during beta. 3MB download. Uninstalls cleanly. No admin for user folders.",
     smart_hint: "Windows may show a SmartScreen notice on first run — here's why that's normal.",
     smart_title: "Seeing “Windows protected your PC”?",
     smart_body: "That's Windows SmartScreen. It appears for apps that are new or not yet code-signed — Windows Clean is a small independent project and the installer isn't code-signed yet. Click More info → Run anyway. The app works offline and never uploads your files.",
@@ -242,7 +242,7 @@ const dict = {
       "Keine Verlängerungen, Kein Abo, Kein Konto",
       "Purchased Badge — lebenslang",
     ],
-    pro_trust: "Nichts verlässt deinen PC. Offline und nur lesend. Systemgeschützt-Warnungen. Nur sicheres Löschen. 2,4MB Installer.",
+    pro_trust: "Nichts verlässt deinen PC. Offline und nur lesend. Systemgeschützt-Warnungen. Nur sicheres Löschen. 3MB Installer.",
     pro_cta: "Pro holen — $12.99 einmalig",
     cases_kicker: "05 — ECHTE EINSPARUNGEN",
     cases_title: "Echte Menschen, echter freier Speicher.",
@@ -260,7 +260,7 @@ const dict = {
     articles_sub: "Praktisches Speicher-Wissen. Kein Blabla.",
     search_ph: "Guides suchen...",
     final_title: "Bereit zu sehen, was sich versteckt?",
-    final_sub: "Kostenlos in Beta. 2,4MB Download. Saubere Deinstallation.",
+    final_sub: "Kostenlos in Beta. 3MB Download. Saubere Deinstallation.",
     smart_hint: "Windows zeigt beim ersten Start evtl. eine SmartScreen-Meldung — hier steht, warum das normal ist.",
     smart_title: "„Der PC wurde durch Windows geschützt“ gesehen?",
     smart_body: "Das ist Windows SmartScreen. Es erscheint bei neuen Apps oder Apps ohne Code-Signatur — Windows Clean ist ein kleines unabhängiges Projekt und der Installer ist noch nicht code-signiert. Klicke auf Weitere Informationen → Trotzdem ausführen. Die App arbeitet offline und lädt keine Dateien hoch.",
@@ -363,7 +363,7 @@ const dict = {
       "Pas de renouvellements, Pas d'abonnement, Pas de compte",
       "Badge Purchased — à vie",
     ],
-    pro_trust: "Rien ne quitte votre PC. Hors ligne et lecture seule. Avertissements Protégé système. Suppression sûre uniquement. Installateur 2,4Mo.",
+    pro_trust: "Rien ne quitte votre PC. Hors ligne et lecture seule. Avertissements Protégé système. Suppression sûre uniquement. Installateur 3Mo.",
     pro_cta: "Obtenir Pro — $12.99 une fois",
     cases_kicker: "05 — ÉCONOMIES RÉELLES",
     cases_title: "De vraies personnes, du vrai espace récupéré.",
@@ -381,7 +381,7 @@ const dict = {
     articles_sub: "Sagesse stockage pratique. Pas de blabla.",
     search_ph: "Chercher guides...",
     final_title: "Prêt à voir ce qui se cache ?",
-    final_sub: "Gratuit en bêta. 2,4Mo. Désinstallation propre. Pas d'admin pour dossiers utilisateur.",
+    final_sub: "Gratuit en bêta. 3Mo. Désinstallation propre. Pas d'admin pour dossiers utilisateur.",
     smart_hint: "Windows peut afficher un avis SmartScreen au premier lancement — voici pourquoi c'est normal.",
     smart_title: "Vous voyez « Windows a protégé votre ordinateur » ?",
     smart_body: "C'est Windows SmartScreen. Il s'affiche pour les applications récentes ou non signées — Windows Clean est un petit projet indépendant et l'installateur n'est pas encore signé. Cliquez sur Informations complémentaires → Exécuter quand même. L'application fonctionne hors ligne et n'envoie jamais vos fichiers.",
@@ -484,7 +484,7 @@ const dict = {
       "Sin renovaciones, Sin suscripción, Sin cuenta",
       "Insignia Purchased — de por vida",
     ],
-    pro_trust: "Nada sale de tu PC. Offline y solo lectura. Advertencias Protegido del sistema. Solo borrado seguro. Instalador 2,4MB.",
+    pro_trust: "Nada sale de tu PC. Offline y solo lectura. Advertencias Protegido del sistema. Solo borrado seguro. Instalador 3MB.",
     pro_cta: "Obtener Pro — $12.99 una vez",
     cases_kicker: "05 — AHORROS REALES",
     cases_title: "Personas reales, espacio real recuperado.",
@@ -502,7 +502,7 @@ const dict = {
     articles_sub: "Sabiduría práctica de almacenamiento. Sin rodeos.",
     search_ph: "Buscar guías...",
     final_title: "¿Listo para ver qué se esconde?",
-    final_sub: "Gratis en beta. 2,4MB. Desinstalación limpia. Sin admin para carpetas usuario.",
+    final_sub: "Gratis en beta. 3MB. Desinstalación limpia. Sin admin para carpetas usuario.",
     smart_hint: "Windows puede mostrar un aviso de SmartScreen la primera vez — por qué es normal.",
     smart_title: "¿Ves «Windows protegió su PC»?",
     smart_body: "Es Windows SmartScreen. Aparece en aplicaciones nuevas o sin firma de código — Windows Clean es un pequeño proyecto independiente y el instalador aún no está firmado. Haz clic en Más información → Ejecutar de todas formas. La app funciona sin conexión y nunca sube tus archivos.",
@@ -605,7 +605,7 @@ const dict = {
       "更新料なし、サブスクなし、アカウントなし",
       "Purchasedバッジ — 永久",
     ],
-    pro_trust: "PCから何も外部に出ません。オフラインで読み取り専用。システム保護警告。安全な削除のみ。2.4MBインストーラー。",
+    pro_trust: "PCから何も外部に出ません。オフラインで読み取り専用。システム保護警告。安全な削除のみ。3MBインストーラー。",
     pro_cta: "Proを取得 — $12.99一度きり",
     cases_kicker: "05 — 実際の節約",
     cases_title: "リアルな人、リアルに空いた容量。",
@@ -623,7 +623,7 @@ const dict = {
     articles_sub: "実用的なストレージの知恵。余計な話なし。",
     search_ph: "ガイドを検索...",
     final_title: "何が隠れているか見てみませんか？",
-    final_sub: "ベータ期間は無料。2.4MB。クリーンにアンインストール。ユーザーフォルダに管理者権限不要。",
+    final_sub: "ベータ期間は無料。3MB。クリーンにアンインストール。ユーザーフォルダに管理者権限不要。",
     smart_hint: "初回起動時にSmartScreenの警告が出ることがあります。これは正常です。",
     smart_title: "「Windows によって PC が保護されました」と表示されましたか？",
     smart_body: "これはWindows SmartScreenです。新しいアプリやコード署名のないアプリで表示されます。Windows Cleanは小規模な個人プロジェクトで、インストーラーはまだコード署名されていません。「詳細情報」→「実行」をクリックしてください。アプリはオフラインで動作し、ファイルをアップロードしません。",
@@ -901,7 +901,7 @@ export default function App({ initialLang }: { initialLang?: Lang } = {}) {
           <div className="relative md:sticky md:top-[84px]">
             <ScreenshotFrame priority src={dashboardImg} label="HOME • SCAN DRIVE • C: 213GB" annotations={[{ text: "C: 99% FULL • 1.46GB FREE", pos: "top-[62%] left-[8%]" }, { text: "RECYCLE BIN 899MB", pos: "top-[78%] right-[8%]" }]} />
             <div className="absolute -left-2 -bottom-4 md:-left-4 md:-bottom-6 bg-white border border-[var(--line)] shadow-[var(--shadow)] rounded-full px-3 py-1.5 text-[11px] font-medium flex items-center gap-1.5">
-              <span className="w-4 h-4 rounded-full bg-[var(--pill-green)] flex items-center justify-center">✓</span> Offline • No cloud • 2.4MB
+              <span className="w-4 h-4 rounded-full bg-[var(--pill-green)] flex items-center justify-center">✓</span> Offline • No cloud • 3MB
             </div>
           </div>
         </div>
@@ -1187,7 +1187,7 @@ export default function App({ initialLang }: { initialLang?: Lang } = {}) {
             <p className="mt-2 text-[13px] text-white/70 max-w-[460px]">{t.final_sub}</p>
             <div className="mt-4 flex flex-wrap gap-2 text-[11px]">
               <span className="px-2.5 py-1 rounded-full bg-white/10 border border-white/15">Offline • Read-only • No upload</span>
-              <span className="px-2.5 py-1 rounded-full bg-white/10 border border-white/15">2.4MB • Clean uninstall</span>
+              <span className="px-2.5 py-1 rounded-full bg-white/10 border border-white/15">3MB • Clean uninstall</span>
               <span className="px-2.5 py-1 rounded-full bg-[#C5E49A] text-black font-semibold">213GB in 1m 25s • Real screenshot</span>
             </div>
             <div id="install-help" className="mt-5 rounded-[16px] bg-white/10 border border-white/15 p-4 text-[12px] leading-[1.55] text-white/80 max-w-[520px] scroll-mt-24">
