@@ -60,3 +60,8 @@ details.lang li.off em{font-style:normal;font-size:11px;margin-left:auto;text-al
   details.lang ul{position:fixed;left:12px;right:12px;top:68px;width:auto}
   .btn{padding:0 12px}
 }
+
+/* tables inside articles */
+article table{width:100%;border-collapse:collapse;margin:1.2em 0;font-size:.93em;display:block;overflow-x:auto}
+article th,article td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+article th{background:var(--bg2);font-weight:600}
