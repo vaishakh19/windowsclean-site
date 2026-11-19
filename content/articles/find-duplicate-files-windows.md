@@ -1,68 +1,28 @@
 ---
-title: "How to find and remove duplicate files on Windows"
-description: "Why comparing file names is not enough, how content hashing finds true duplicates, and which duplicates are safe to delete on Windows."
-date: 2026-11-17
-category: Guides
+title: "How to Find Duplicate Files on Windows Without Deleting the Wrong One"
+description: "Find potential duplicate files on Windows, compare their paths, and remove only confirmed copies."
+date: 2026-11-20
+category: Windows Storage
 ---
 
-Duplicate files are one of the quietest ways to lose disk space: the same photo imported twice, a download saved three times, a backup folder copied into another backup folder. Finding them reliably is harder than it sounds, because **names and dates can lie**.
+# Find duplicate files on Windows
 
-## Why file names are not enough
+When Windows reports low storage, start by seeing what is actually using space. A review-first approach is safer than deleting folders at random: identify the biggest items, check their paths, and choose an action only after you recognise them.
 
-Two files can have different names and identical content (`IMG_0412.jpg` and `IMG_0412 (1).jpg`). Two files can have the same name and different content (`report.docx` in two different projects). Matching by name will give you false positives and false negatives. Matching by size is better but still not proof: different files can share a size.
+## Start with a local scan
 
-## How a reliable duplicate finder works
+Use Windows Clean to scan the affected drive or folder. Switch between the treemap for large folders, the sunburst for an overview, and the file list for exact paths and sizes. Look for potential duplicate files with matching names, sizes or content. A scan is read-only; it does not remove anything.
 
-A dependable tool works in stages:
+## Check the path before acting
 
-1. **Group by size.** Files with a unique size cannot be duplicates, so they are skipped. This removes most files cheaply.
-2. **Hash the rest.** For each group of same-size files, the tool reads the content and computes a cryptographic hash such as **SHA-256**. A hash is a short fingerprint of the file's bytes.
-3. **Compare fingerprints.** Files with the same SHA-256 hash have, for all practical purposes, identical content.
+Open or reveal an item in File Explorer before you remove it. Check its name, folder, date, and whether another program still needs it. Keep a backup of important files. Avoid manually deleting folders inside Windows, Program Files, or folders you do not understand.
 
-[Windows Clean](/) identifies duplicates this way, by SHA-256 content, and the duplicate detection is part of the free version. Everything runs on your PC; your files are not uploaded.
+## Confirm duplicates before removal
 
-## Checking two files yourself
+Move personal files to another drive when you want to keep them. If you decide to remove a file, use a reversible action such as the Recycle Bin and confirm the selection carefully. Windows Clean highlights protected locations, but the final decision should always be based on what you have reviewed.
 
-You can compare two specific files in PowerShell:
+## Prevent the problem from returning
 
-```
-Get-FileHash "C:\Photos\a.jpg" -Algorithm SHA256
-Get-FileHash "D:\Backup\a.jpg" -Algorithm SHA256
-```
+Review storage every few weeks, especially after large installs, video work, game updates, or project builds. Keep downloads and backups organised, and leave free space on your system drive for Windows updates and normal work.
 
-If the two hashes are identical, the files are identical.
-
-## Which duplicates are safe to delete
-
-Safe candidates:
-
-- **Photos and videos** imported or exported more than once.
-- **Downloads** saved repeatedly (installers, PDFs, ZIP files).
-- **Old copies of folders** you moved without deleting the original.
-- **Music and documents** copied between drives for convenience.
-
-## Which duplicates to leave alone
-
-This is where careless cleaning causes damage.
-
-- **System and program files.** Windows and apps legitimately keep identical copies of DLLs in different folders, because each program expects its own. Deleting one can break the app. Stay out of `C:\Windows`, `C:\Program Files` and `C:\Program Files (x86)`.
-- **Hard links.** Files in [WinSxS](/articles/why-is-winsxs-so-big/) share data with other folders and are not real extra copies.
-- **Project folders.** Identical `node_modules`, `.git` or library files across projects are often required by each project.
-- **Synced folders.** If a folder is synced with OneDrive, Dropbox or similar, deleting a "duplicate" may delete it everywhere.
-
-## A safe process
-
-1. **Scan the folders you control** (Pictures, Documents, Downloads, a backup drive), not the whole system drive.
-2. **Decide which copy to keep** before deleting: the one in the folder you actually use, or the one with the clearest name.
-3. **Send to the Recycle Bin**, not permanent delete, so a mistake can be undone.
-4. **Empty the bin later,** once you're sure. See [Recycle Bin disk space](/articles/recycle-bin-disk-space/).
-
-In Windows Clean, deleting is a Pro feature. Files go to the Recycle Bin by default after you confirm, and the app refuses to delete drive roots, protected Windows locations and symlinks or junctions.
-
-## How much can you expect to recover?
-
-It varies widely. A drive with years of photo imports and backups may hold tens of gigabytes of duplicates; a clean work laptop may hold almost none. If you only need the quickest wins, start with [the biggest files](/articles/find-large-files-windows/), then run a duplicate scan on your personal folders.
-
-## The short version
-
-Match by content, not by name. Ignore system and program folders. Keep one copy deliberately, and use the Recycle Bin when you delete.
+For installation, privacy, and safe deletion details, see the [Windows Clean FAQ](../../faq/).
