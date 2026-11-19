@@ -17,7 +17,7 @@
   },
   {
     "q": "Why does Windows say \"Windows protected your PC\" when I run the installer?",
-    "a": "That is Windows SmartScreen. It appears for apps that are new or not yet code-signed. Windows Clean is a small independent project and the installer is not code-signed yet. Click **More info**, then **Run anyway**. You can check that your download is unchanged by comparing its SHA-256 hash with [SHA256SUMS.txt](/download/SHA256SUMS.txt). In PowerShell run `Get-FileHash .\\Windows-Clean-setup.exe -Algorithm SHA256`."
+    "a": "That is Windows SmartScreen, which can warn about new or unsigned applications. Do not bypass a warning automatically. First confirm that you downloaded the installer from this site, then compare its SHA-256 hash with [SHA256SUMS.txt](/download/SHA256SUMS.txt). In PowerShell run `Get-FileHash .\\Windows-Clean-setup.exe -Algorithm SHA256`. If the hash does not match, stop and contact [support](mailto:vaishakhdesktop@gmail.com). Code signing is a planned trust improvement."
   },
   {
     "q": "Is it safe to delete files with Windows Clean?",

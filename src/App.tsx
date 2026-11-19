@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { SEO } from "./seo";
 import ARTICLES from "virtual:articles";
 import { DOWNLOAD_URL, DOWNLOAD_FILE, CHECKOUT_URL, SUPPORT_EMAIL, SHA_URL } from "../site.config.mjs";
@@ -48,13 +48,13 @@ const dict = {
     hero_desc: "A beautifully simple, offline tool that visualizes disk usage, finds large forgotten files, and helps you reclaim space. No cloud. No telemetry.",
     hero_download: "Download for Windows — Free",
     hero_how: "See screenshots ↓",
-    trust: "Trusted by 12,400+ designers & developers. Offline. Private.",
+    trust: "Local-first scanning. No account. No telemetry.",
     stats_scanned: "GB Analyzed",
     stats_files: "Files",
     stats_folders: "Folders",
     stats_time: "Scan",
     dashboard_kicker: "01 — DASHBOARD",
-    dashboard_title: "Your PC is full? See exactly why in 3 seconds",
+    dashboard_title: "Your PC is full? Start with a clear picture of what is using space",
     dashboard_sub: "Understand Your Disk in Seconds",
     dashboard_p1: "No more guessing where your storage went. Windows Clean shows everything at a glance.",
     dashboard_b1_t: "VOLUMES — At a glance",
@@ -84,7 +84,7 @@ const dict = {
     pf_large_t: "Large Files",
     pf_large_d: "Instantly filter >1GB, >100MB, older than 1 year. Find that 4K render from 2022 in seconds. Sort by size, age, extension.",
     pf_dup_t: "Duplicate Finder",
-    pf_dup_d: "Smart name matching (case-insensitive) + size filters. Find 1,200 duplicate logos before you waste backup space.",
+    pf_dup_d: "Use name and size filters to surface potential duplicates. Review every result before you remove anything.",
     pf_search_t: "Super Power Search — Pro",
     pf_search_d: "Combine AND / OR, regex, wildcards, modified / created date ranges, extension groups. Save presets. For devs who need precision.",
     pf_types_t: "File Types",
@@ -121,28 +121,28 @@ const dict = {
       "No renewals, No subscription, No account",
       "Purchased badge — lifetime",
     ],
-    pro_trust: "Nothing leaves your PC. Offline and read-only. System Protected warnings. Safe deletion only. 3MB installer, uninstalls cleanly.",
+    pro_trust: "Scans are read-only until you choose an action. Protected Windows locations are flagged, and file removal goes to the Recycle Bin after confirmation.",
     pro_cta: "Get Pro — $12.99 once",
-    cases_kicker: "05 — REAL SAVINGS",
-    cases_title: "Real people, real space reclaimed.",
-    case1_name: "Alex • Gamer",
-    case1_metric: "+114GB",
-    case1_story: "Found Grand Theft Auto V double install: Rockstar + Steam. 114GB purple block in Treemap made it obvious. Deleted old version, kept saves.",
-    case2_name: "Mira K. • Developer",
-    case2_metric: "+18GB",
-    case2_story: "WinSxS 6GB + Arduino15 13.7GB + JetBrains cache 1GB. Sunburst showed Development taking 1.5% but hiding 20GB. Compacted safely.",
-    case3_name: "Lumen Studio • 12 people",
-    case3_metric: "+87GB",
-    case3_story: "NAS with 4 years of exports. File List sorted by Modified showed 2021 files never opened. Large Files view found 200MB Figma exports x400.",
+    cases_kicker: "05 — EXAMPLE WORKFLOWS",
+    cases_title: "Start with evidence, then decide what to keep.",
+    case1_name: "Game library",
+    case1_metric: "Find large folders",
+    case1_story: "Use the treemap to spot the folders taking the most room. Open or reveal them first; Windows Clean does not remove files during a scan.",
+    case2_name: "Development machine",
+    case2_metric: "Review storage",
+    case2_story: "Use the sunburst and filters to investigate large caches, SDKs, builds and old project folders. Check what each folder contains before cleanup.",
+    case3_name: "Creative work",
+    case3_metric: "Sort by size or date",
+    case3_story: "Use the file list to review exports and archived work. Move items you need to keep before using a confirmed Recycle Bin action.",
     articles_kicker: "06 — LEARN",
     articles_title: "Articles & Guides",
     articles_sub: "Practical storage wisdom. No fluff.",
     search_ph: "Search guides...",
     final_title: "Ready to see what's hiding?",
     final_sub: "Free during beta. 3MB download. Uninstalls cleanly. No admin for user folders.",
-    smart_hint: "Windows may show a SmartScreen notice on first run — here's why that's normal.",
+    smart_hint: "If Windows shows a SmartScreen notice, verify the installer before continuing.",
     smart_title: "Seeing “Windows protected your PC”?",
-    smart_body: "That's Windows SmartScreen. It appears for apps that are new or not yet code-signed — Windows Clean is a small independent project and the installer isn't code-signed yet. Click More info → Run anyway. The app works offline and never uploads your files.",
+    smart_body: "SmartScreen can warn about new or unsigned apps. Do not bypass a warning automatically: confirm you downloaded Windows Clean from this site, compare the installer SHA-256 with the published value, and contact support if anything does not match. Code signing is a planned trust improvement.",
     smart_verify: "Verify your download (SHA-256)",
     smart_support: "Questions? Email",
     final_download: "Download Windows Clean Free",
@@ -713,10 +713,8 @@ export default function App({ initialLang }: { initialLang?: Lang } = {}) {
   const [theme, setTheme] = useState(THEMES[0]);
   const [mobileMenu, setMobileMenu] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
-  const [langOpenMobile, setLangOpenMobile] = useState(false);
   const [vizTab, setVizTab] = useState<"sunburst"|"treemap"|"filelist">("treemap");
   const [toast, setToast] = useState<string|null>(null);
-  const [email, setEmail] = useState("");
   const [search, setSearch] = useState("");
 
   const t = dict[lang];
@@ -885,10 +883,10 @@ export default function App({ initialLang }: { initialLang?: Lang } = {}) {
             {/* Stats from screenshot */}
             <div className="mt-8 grid grid-cols-4 gap-3 max-w-[520px]">
               {[
-                { val: "213 GB", lab: t.stats_scanned },
-                { val: "693K", lab: t.stats_files },
-                { val: "253K", lab: t.stats_folders },
-                { val: "1m 25s", lab: t.stats_time },
+                { val: "213 GB", lab: `${t.stats_scanned} (example)` },
+                { val: "693K", lab: `${t.stats_files} (example)` },
+                { val: "253K", lab: `${t.stats_folders} (example)` },
+                { val: "1m 25s", lab: `${t.stats_time} (example)` },
               ].map(s => (
                 <div key={s.lab} className="rounded-[16px] bg-white border border-[var(--line)] p-3">
                   <div className="text-[16px] md:text-[18px] font-bold tracking-tight leading-none">{s.val}</div>
@@ -901,7 +899,7 @@ export default function App({ initialLang }: { initialLang?: Lang } = {}) {
           <div className="relative md:sticky md:top-[84px]">
             <ScreenshotFrame priority src={dashboardImg} label="HOME • SCAN DRIVE • C: 213GB" annotations={[{ text: "C: 99% FULL • 1.46GB FREE", pos: "top-[62%] left-[8%]" }, { text: "RECYCLE BIN 899MB", pos: "top-[78%] right-[8%]" }]} />
             <div className="absolute -left-2 -bottom-4 md:-left-4 md:-bottom-6 bg-white border border-[var(--line)] shadow-[var(--shadow)] rounded-full px-3 py-1.5 text-[11px] font-medium flex items-center gap-1.5">
-              <span className="w-4 h-4 rounded-full bg-[var(--pill-green)] flex items-center justify-center">✓</span> Offline • No cloud • 3MB
+              <span className="w-4 h-4 rounded-full bg-[var(--pill-green)] flex items-center justify-center">✓</span> Local scan • No account • No telemetry
             </div>
           </div>
         </div>
@@ -963,9 +961,9 @@ export default function App({ initialLang }: { initialLang?: Lang } = {}) {
 
           <div className="flex flex-wrap gap-2 mb-8">
             {[
-              { id: "treemap", label: t.tab_treemap, sub: "114GB GTA V" },
-              { id: "sunburst", label: t.tab_sunburst, sub: "213GB Circle" },
-              { id: "filelist", label: t.tab_filelist, sub: "123GB Table" },
+              { id: "treemap", label: t.tab_treemap, sub: "Folder sizes" },
+              { id: "sunburst", label: t.tab_sunburst, sub: "Drive overview" },
+              { id: "filelist", label: t.tab_filelist, sub: "Sort and review" },
             ].map(tab => (
               <button
                 key={tab.id}
@@ -1128,9 +1126,9 @@ export default function App({ initialLang }: { initialLang?: Lang } = {}) {
           <h2 className="serif text-[32px] md:text-[44px] leading-[0.9] tracking-tight mb-8">{t.cases_title}</h2>
           <div className="grid md:grid-cols-3 gap-4">
             {[
-              { name: t.case1_name, metric: t.case1_metric, story: t.case1_story, color: "#E8B4A0", img: treemapImg, label: "Treemap proves 114GB" },
-              { name: t.case2_name, metric: t.case2_metric, story: t.case2_story, color: "#A8CBE6", img: sunburstImg, label: "Sunburst 213GB" },
-              { name: t.case3_name, metric: t.case3_metric, story: t.case3_story, color: "#C5E49A", img: filelistImg, label: "File List 123GB" },
+              { name: t.case1_name, metric: t.case1_metric, story: t.case1_story, color: "#E8B4A0", img: treemapImg, label: "Treemap example" },
+              { name: t.case2_name, metric: t.case2_metric, story: t.case2_story, color: "#A8CBE6", img: sunburstImg, label: "Sunburst example" },
+              { name: t.case3_name, metric: t.case3_metric, story: t.case3_story, color: "#C5E49A", img: filelistImg, label: "File list example" },
             ].map(c => (
               <div key={c.name} className="rounded-[24px] bg-white border border-[var(--line)] p-5 shadow-[var(--shadow)] flex flex-col">
                 <div className="flex items-center justify-between">
@@ -1144,6 +1142,14 @@ export default function App({ initialLang }: { initialLang?: Lang } = {}) {
                 <div className="mt-4 text-[11px] font-semibold tracking-widest uppercase opacity-60">{t.read_case} → {c.label}</div>
               </div>
             ))}
+          </div>
+          <div className="mt-6 rounded-[20px] border border-[var(--line)] bg-[var(--bg-2)] p-5">
+            <p className="text-[12px] font-semibold">Helpful Windows storage guides</p>
+            <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-[12px] underline underline-offset-4 text-[var(--ink-soft)]">
+              <a href={`${import.meta.env.BASE_URL}windows-disk-space-analyzer/`}>Windows disk space analyzer</a>
+              <a href={`${import.meta.env.BASE_URL}find-large-files-windows/`}>Find large files on Windows</a>
+              <a href={`${import.meta.env.BASE_URL}free-up-disk-space-windows/`}>Free up disk space safely</a>
+            </div>
           </div>
         </div>
       </section>
@@ -1188,7 +1194,7 @@ export default function App({ initialLang }: { initialLang?: Lang } = {}) {
             <div className="mt-4 flex flex-wrap gap-2 text-[11px]">
               <span className="px-2.5 py-1 rounded-full bg-white/10 border border-white/15">Offline • Read-only • No upload</span>
               <span className="px-2.5 py-1 rounded-full bg-white/10 border border-white/15">3MB • Clean uninstall</span>
-              <span className="px-2.5 py-1 rounded-full bg-[#C5E49A] text-black font-semibold">213GB in 1m 25s • Real screenshot</span>
+              <span className="px-2.5 py-1 rounded-full bg-[#C5E49A] text-black font-semibold">Screenshots show example scan data</span>
             </div>
             <div id="install-help" className="mt-5 rounded-[16px] bg-white/10 border border-white/15 p-4 text-[12px] leading-[1.55] text-white/80 max-w-[520px] scroll-mt-24">
               <div className="font-semibold text-white mb-1">🛡️ {t.smart_title}</div>
@@ -1198,10 +1204,8 @@ export default function App({ initialLang }: { initialLang?: Lang } = {}) {
           </div>
           <div className="w-full md:w-[380px] flex flex-col gap-3 relative">
             <button onClick={handleDownload} className="h-11 px-6 rounded-full bg-white text-black text-[13px] font-semibold hover:opacity-90 transition w-full md:w-auto">{t.final_download}</button>
-            <div className="flex gap-2">
-              <input value={email} onChange={e=>setEmail(e.target.value)} placeholder={t.final_email_ph} className="flex-1 h-11 pl-4 pr-3 rounded-full bg-white/10 border border-white/20 text-[13px] placeholder:text-white/40 outline-none focus:bg-white/15 transition" />
-              <button onClick={()=>{ if(!email.includes("@")) { setToast("Valid email required"); return;} setEmail(""); setToast("You're in!");}} className="h-11 px-4 rounded-full bg-white text-black text-[12px] font-semibold shrink-0">{t.final_email_btn}</button>
-            </div>
+            <a href={`mailto:${SUPPORT_EMAIL}?subject=Windows%20Clean%20question`} className="h-11 px-4 rounded-full bg-white/10 border border-white/20 text-white text-[12px] font-semibold flex items-center justify-center">Ask a question before installing</a>
+            <p className="text-[11px] text-white/55 text-center">No email capture is enabled on this site.</p>
           </div>
         </div>
       </section>
