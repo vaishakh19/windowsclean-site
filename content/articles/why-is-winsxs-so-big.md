@@ -41,9 +41,3 @@ This removes superseded component versions the system no longer needs. You can a
 ## The short version
 
 WinSxS looks bigger than it is, and the supported tools (DISM and Disk Cleanup) are the only safe way to reduce it. Treat anything else in that folder as off limits.
-
-## Related guides
-
-- [C drive full? 10 safe ways to free space](/articles/c-drive-full-windows/)
-- [How to find the biggest files on Windows](/articles/find-large-files-windows/)
-- [How to safely delete the Windows.old folder](/articles/windows-old-folder-delete/)

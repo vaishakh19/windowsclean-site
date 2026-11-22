@@ -1,70 +1,76 @@
 ---
-title: "Sunburst vs Treemap vs File List: which view should you use?"
-description: "When to use each disk-usage view: Sunburst for an overview, Treemap for finding the biggest items, File List for taking action."
+title: "Sunburst vs treemap vs file list: which disk view to use"
+description: "Sunburst for the big picture, treemap for finding the biggest items, file list for taking action. How each disk-usage view works and when to pick it."
 date: 2026-11-04
 category: Guides
 ---
 
-Disk analyzers show the same scan in different views. Each view answers a different question, so choosing the right one makes a clean-up much faster. [Windows Clean](/) includes all three, and you can switch between them without rescanning.
+Almost every disk space analyzer shows your drive in more than one way, and the choice is not cosmetic. Each view answers a different question. Pick the right one and you find the space hog in seconds. Pick the wrong one and you scroll for ten minutes.
 
-## The three views at a glance
+Windows Clean offers three views of the same scan: **sunburst**, **treemap** and **file list**. Here is when to use each.
 
-| View | Best question it answers | Strength | Weakness |
-| --- | --- | --- | --- |
-| **Sunburst** | "Where is my space going overall?" | Shows folder hierarchy as rings | Small items are hard to see |
-| **Treemap** | "What are the biggest items?" | Area matches size, so large items stand out | Deep hierarchy is less obvious |
-| **File List** | "What exactly should I delete?" | Exact names, sizes and paths | No visual overview |
+## Sunburst: understand the structure
 
-## Sunburst: the overview
+A sunburst is a set of concentric rings. The centre is the folder you scanned. Each ring outward is one level deeper, and the width of every slice shows how much space that folder uses.
 
-A sunburst is a set of concentric rings. The center is the scanned folder, and each ring outward is the next level of subfolders. The angle of each slice is its share of the parent's size.
+**Use it when:**
 
-Use it to:
+- You want a quick overview of a whole drive.
+- You need to see *where* a large folder sits in the hierarchy, for example `Users → you → AppData → Local → ...`.
+- You are explaining the result to someone else. It is the easiest view to read at a glance.
 
-- Get a first impression of a drive in seconds.
-- See which top-level folders dominate, such as `Users`, `Program Files` or `Windows`.
-- Follow one heavy branch, for example `Users → YourName → AppData → Local`, as far down as you want by clicking.
+**Weak spot:** small folders become thin slivers that are hard to click. For that, switch views.
 
-It is less useful for finding one specific huge file in a crowded folder, because very thin slices are hard to point at.
+## Treemap: find the biggest items
 
-## Treemap: the biggest items
+A treemap fills a rectangle with nested boxes. Bigger files and folders get bigger boxes, and nothing is wasted on empty space, so you can compare hundreds of items at once.
 
-A treemap fills a rectangle with smaller rectangles, with each rectangle's area proportional to its size. Folders are grouped, so a big game install is a large block made of its own sub-blocks.
+**Use it when:**
 
-Use it to:
+- You want to spot the single biggest file or folder.
+- You are hunting for outliers: a 30 GB video, a forgotten virtual machine disk, an old installer.
+- You want to compare many folders of similar importance.
 
-- Spot the largest files and folders at a glance.
-- Compare sizes visually. A block twice as large uses twice the space.
-- Find surprises such as a forgotten video export or a huge cache.
+**Weak spot:** it does not show hierarchy as clearly as a sunburst, so you may need to drill down level by level.
 
-Treemaps are the better view when your question is "what is the single biggest thing?", which is the most common question on a full drive.
+## File list: take action
 
-## File List: taking action
+A file list is the plain table you already know from File Explorer: name, size, type, date, sorted any way you like.
 
-A list gives you rows with name, size and location, sorted however you like. It isn't pretty, but it is exact.
+**Use it when:**
 
-Use it to:
+- You are ready to act: sort by size, pick files and decide what to do.
+- You need exact numbers instead of shapes.
+- You are looking for a specific type or an old file.
 
-- **Confirm the full path** before you delete anything. See [find the biggest files on Windows](/articles/find-large-files-windows/).
-- Sort by size, filter by type and work through candidates one by one.
-- Review [duplicate files](/articles/find-duplicate-files-windows/) and decide which copy to keep.
+In Windows Clean, the free version shows sizes and names. **Pro** adds full paths, file actions, deleting to the Recycle Bin and CSV export, so a list is also the best view for a cleanup report.
 
-In Windows Clean, full file paths and file actions are Pro features, and deleting sends files to the Recycle Bin by default after you confirm.
+## A simple workflow
 
-## A practical workflow
+1. **Scan the drive** and start with the sunburst to see which top-level folders are heavy.
+2. **Switch to the treemap** inside the heavy folder to find the largest individual items.
+3. **Open the file list**, sort by size, and decide what to keep.
+4. **Check before deleting.** If you are not sure what a folder is, read about it first. Folders such as [WinSxS](/articles/why-is-winsxs-so-big/) must never be deleted by hand.
 
-1. **Start with the sunburst** to see which top-level folders are heavy.
-2. **Switch to the treemap** inside that folder to find the biggest items.
-3. **Use the file list** to check names and paths, then decide what to remove.
-4. **Delete in small batches** and check that your apps still work. Then empty the bin; see [Recycle Bin disk space](/articles/recycle-bin-disk-space/).
+## Which one should I pick?
 
-## Which view for which task
+| Your goal | Best view |
+|---|---|
+| "Where is my space going?" | Sunburst |
+| "What is the biggest thing on this drive?" | Treemap |
+| "Show me the 50 largest files I can delete" | File list |
+| "Explain this to a colleague" | Sunburst |
 
-- **"My C drive is full and I don't know why."** Sunburst, then treemap. Also see [C drive full? 10 safe ways to free space](/articles/c-drive-full-windows/).
-- **"Which game should I uninstall?"** Treemap on the games folder. See the [gamer guide](/articles/gamer-guide-reclaim-game-space/).
-- **"Delete the 20 biggest videos."** File list sorted by size.
-- **"Why is `Users` so large?"** Sunburst on `Users`, then look inside [AppData](/articles/appdata-folder-too-big/).
+## Frequently asked questions
 
-## The short version
+### Which disk usage view is the most accurate?
 
-Sunburst for the big picture, treemap for the biggest items, file list for precise action. Use them in that order and the clean-up takes minutes instead of hours.
+All three views use the same scan data, so the sizes are identical. They only differ in how the numbers are drawn.
+
+### Why use a visual view instead of File Explorer?
+
+File Explorer needs you to open each folder and wait for it to calculate its size. A scan measures everything once, so you can see the whole drive in one picture.
+
+### What should I do with what I find?
+
+Start with the simple wins: the [Recycle Bin](/articles/recycle-bin-disk-space/), old downloads and [duplicate files](/articles/find-duplicate-files-windows/). Leave system folders alone unless a supported Windows tool handles them.

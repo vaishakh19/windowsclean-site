@@ -17,7 +17,7 @@
   },
   {
     "q": "Why does Windows say \"Windows protected your PC\" when I run the installer?",
-    "a": "That is Windows SmartScreen, which can warn about new or unsigned applications. Do not bypass a warning automatically. First confirm that you downloaded the installer from this site, then compare its SHA-256 hash with [SHA256SUMS.txt](/download/SHA256SUMS.txt). In PowerShell run `Get-FileHash .\\Windows-Clean-setup.exe -Algorithm SHA256`. If the hash does not match, stop and contact [support](mailto:vaishakhdesktop@gmail.com). Code signing is a planned trust improvement."
+    "a": "That is Windows SmartScreen. It appears for apps that are new or not yet code-signed. Windows Clean is a small independent project and the installer is not code-signed yet. Click **More info**, then **Run anyway**. You can check that your download is unchanged by comparing its SHA-256 hash with [SHA256SUMS.txt](/download/SHA256SUMS.txt). In PowerShell run `Get-FileHash .\\Windows-Clean-setup.exe -Algorithm SHA256`."
   },
   {
     "q": "Is it safe to delete files with Windows Clean?",
@@ -26,6 +26,18 @@
   {
     "q": "Why is the WinSxS folder so big, and can I delete it?",
     "a": "Do not delete it by hand. WinSxS is the Windows component store, and its size in File Explorer is overstated because many files are hard links. See [Why is the WinSxS folder so big?](/articles/why-is-winsxs-so-big/) for the safe way to shrink it with DISM."
+  },
+  {
+    "q": "Why is my C drive full and how do I find what is using the space?",
+    "a": "Scan the drive with Windows Clean and open the sunburst or treemap to see the biggest folders. Usual causes are the Recycle Bin, temporary files, WinSxS, hiberfil.sys, Windows.old, restore points and AppData. See [C drive full: how to find what is using space](/articles/c-drive-full-windows-11/) for a step-by-step checklist."
+  },
+  {
+    "q": "Can Windows Clean find duplicate files?",
+    "a": "Yes. Duplicate detection compares file content by SHA-256, so renamed copies are found and files that only share a name are not mixed up. See [how to find duplicate files on Windows](/articles/find-duplicate-files-windows/)."
+  },
+  {
+    "q": "Why do I still have no free space after deleting files?",
+    "a": "Deleted files stay in the Recycle Bin and keep using space until you empty it. See [Recycle Bin disk space](/articles/recycle-bin-disk-space/)."
   },
   {
     "q": "How do I contact support?",

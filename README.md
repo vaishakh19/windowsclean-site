@@ -45,6 +45,12 @@ content/articles/c-drive-full.de.md    <- German     (.fr French, .es Spanish, .
 - Interface words on these pages (menu, "min read", buttons) are in `lib/i18n.mjs`.
 
 ## SEO extras
+- **Article extras (automatic):** table of contents, "Keep reading" related links, `BlogPosting` + `BreadcrumbList` schema, and `FAQPage` schema.
+  To get FAQ schema on an article, end it with a `## Frequently asked questions` section and put each question as `### Question?` followed by the answer.
+- **Optional `updated: 2026-12-01`** in the article header sets `dateModified` and shows an "Updated" date. Bump it when you refresh an article.
+- Internal links written as `/articles/other-slug/` automatically point to the translated page when one exists.
+- Titles longer than ~58 characters drop the " | Windows Clean" suffix so Google does not cut them off.
+- `404.html` is `noindex` and has no canonical.
 - **FAQ page:** edit `content/faq.json` (a list of `q` / `a` pairs). It becomes `/faq/` with FAQ schema.
 - **IndexNow:** `.github/workflows/indexnow.yml` tells Bing and others about new pages after each push. The key file in `public/` must stay.
 - **llms.txt:** generated automatically on every build.

@@ -1,53 +1,73 @@
 ---
-title: "Why is the AppData folder so big? What is safe to clean"
-description: "AppData often holds tens of GB of caches. What Local, LocalLow and Roaming mean, what is safe to clear and what to leave alone."
-date: 2026-11-17
+title: "AppData folder too big? What is safe to clean"
+description: "Why the AppData folder can reach tens of gigabytes, what lives in Local, Roaming and LocalLow, and which caches are safe to clear without breaking apps."
+date: 2026-11-16
 category: Storage Tips
 ---
 
-On many PCs, `C:\Users\YourName\AppData` is one of the largest folders on the drive, and it is hidden, so people rarely look in it. It holds a mix of harmless caches and settings you really don't want to lose. The trick is telling them apart.
+The `AppData` folder is one of the biggest hidden space users on Windows. It can reach 30 GB or more, and File Explorer does not make it easy to see what is inside. This guide explains the folder and shows which parts you can clean.
 
-## How to open AppData
+## Where is AppData?
 
-AppData is hidden. Press **Win + R**, type `%AppData%` and press Enter. That opens `Roaming`; click **AppData** in the address bar to see the parent folder. You can also type `%LocalAppData%` to jump to the `Local` folder, which is usually where the space goes.
+It sits inside your user profile: `C:\Users\<you>\AppData`. It is hidden by default. To open it quickly, press **Win + R**, type `%appdata%` and press Enter, then go up one level. You will see three folders:
 
-## The three folders
+| Folder | Purpose |
+|---|---|
+| `Local` | Machine-specific data, caches, temp files. Usually the largest. |
+| `LocalLow` | Low-integrity data for sandboxed apps and some games. |
+| `Roaming` | Settings that can follow your account between PCs. |
 
-- **Local:** data specific to this PC. It's where most caches live and where most of the size is. Not synced between computers.
-- **LocalLow:** data for apps that run with lower permissions, such as some browser components. Usually small.
-- **Roaming:** settings and data intended to follow your user account between computers on a domain. Usually small but important.
+## What usually takes the most space
 
-## Common space users in Local
+Scan your profile and look inside `AppData\Local`. Common heavy items:
 
-| Where | What it is | Safe to clear? |
-| --- | --- | --- |
-| `Local\Temp` | Temporary files from apps and installers | Yes, skip files in use |
-| Browser caches (Chrome, Edge, Firefox) | Cached pages, images and scripts | Yes, from browser settings |
-| Chat and video apps (Teams, Discord, Slack, Zoom) | Cached media and logs | Usually yes, from the app or by closing it first |
-| `Local\Microsoft\Windows\Explorer` | Thumbnail cache | Yes, Windows rebuilds it |
-| `Local\Packages` | Data for Microsoft Store apps | Use the app's own **Reset**, not manual deletion |
-| Developer caches (npm, pip, NuGet, Docker, WSL) | Downloaded packages and images | Yes, with each tool's own clean command |
-| `Local\D3DSCache` | DirectX shader cache | Yes, and it is rebuilt |
+- **Browser caches.** Chrome, Edge and Firefox store cached pages and media.
+- **Temp** (`%LOCALAPPDATA%\Temp`). Leftovers from installers and apps.
+- **Chat and collaboration apps.** Discord, Teams, Slack and Spotify caches can grow to several gigabytes.
+- **Developer caches.** npm (`%LOCALAPPDATA%\npm-cache`), pip (`%LOCALAPPDATA%\pip\Cache`), NuGet and build tools.
+- **Virtual disks.** Docker Desktop and WSL distributions keep large `.vhdx` disk images under `AppData\Local` (for example `...\Packages\<distro>\LocalState\ext4.vhdx`).
+- **Game launchers and crash dumps.** See the [gamer guide](/articles/gamer-guide-reclaim-game-space/).
+
+## What is safe to clean
+
+**Generally safe**, with the app closed:
+
+- The `Temp` folder contents. Skip files that are in use.
+- Browser caches, but clear them from the browser itself (**Settings → Privacy → Clear browsing data → Cached images and files**), not by deleting folders.
+- App caches, via the app's own "clear cache" option.
+- Package manager caches via their commands: `npm cache clean --force`, `pip cache purge`.
+
+**Safer to do through Windows:** **Settings → System → Storage → Temporary files** covers temporary files without touching anything important.
 
 ## What to leave alone
 
-- **`Roaming` application folders** unless you know the app. They store settings, profiles and sometimes game saves or licences.
-- **Email data files** such as Outlook `.ost` and `.pst`. A `.pst` can be your only copy of mail.
-- **Password manager, wallet and authenticator data.**
-- **Game saves** stored under `Local`, `LocalLow` or `Roaming`. See [reclaiming space from game installs](/articles/gamer-guide-reclaim-game-space/) for how to find them first.
+- **`Roaming`** unless you know the app. It often holds your settings, saved logins and licence information.
+- Anything you do not recognise. Look it up first.
+- **Docker and WSL disk images.** Do not delete `.vhdx` files by hand. They contain your containers or Linux files. Use `docker system prune` or WSL's export and compact tools instead.
+- Folders belonging to **security software**.
 
-## The safest way to clean
+## A safe approach
 
-1. **Find the heavy subfolders first.** A [disk analyzer](/articles/best-disk-space-analyzers-windows/) shows which app folders in `AppData` are largest, so you spend time on those and not on a 4 KB folder.
-2. **Close the application** before clearing its cache.
-3. **Use the app's own option** (browser **Clear browsing data**, **Settings → Apps → Advanced options → Reset or Storage**), which removes only what is safe.
-4. **For `Temp`,** use **Settings → System → Storage → Temporary files**, or let [Storage Sense](/articles/storage-sense-vs-disk-cleanup/) do it on a schedule.
-5. **Delete to the Recycle Bin** for anything you remove manually.
+1. **Scan your user profile** and open the treemap. The largest rectangles in `AppData\Local` show where to focus. [See how to read it](/articles/sunburst-vs-treemap-vs-file-list/).
+2. **Identify the app** that owns the big folder.
+3. **Use that app's own cache cleaner** whenever it has one.
+4. If you must delete manually, close the app and **delete to the Recycle Bin** first.
+5. **Empty the bin** to actually free the space. See the [Recycle Bin guide](/articles/recycle-bin-disk-space/).
 
-## Why is the folder so big in the first place?
+## Related guides
 
-Apps built on web technologies (Electron, Chromium) each carry their own browser-style cache, so a few chat and editing apps can add several gigabytes. Developer tools download complete packages and container images. Over a year or two, that compounds. None of it is damaging, but it isn't cleaned automatically.
+AppData is one piece of a bigger puzzle. For the full list of space users, read [C drive full: how to find what is using space](/articles/c-drive-full-windows-11/).
 
-## The short version
+## Frequently asked questions
 
-`AppData\Local` is mostly caches that apps rebuild, so it is the right place to look for space. Clean through each app's own settings, leave `Roaming` and data files alone, and look at the folder sizes first. More general steps are in [C drive full? 10 safe ways to free space](/articles/c-drive-full-windows/).
+### Can I delete the whole AppData folder?
+
+No. It holds settings, logins and data for your apps. Deleting it resets or breaks them.
+
+### Why does AppData keep growing?
+
+Apps rebuild caches as you use them, so a cleaned cache grows again over time. That is normal.
+
+### Is it safe to move AppData to another drive?
+
+It is possible with advanced tools, but it is not supported by Microsoft and can cause problems with updates. Cleaning is the safer route.

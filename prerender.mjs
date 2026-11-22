@@ -2,7 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import { SITE_URL, SITE_NAME, LANGS, DOWNLOAD_URL, SUPPORT_EMAIL, ANALYTICS_DOMAIN, ANALYTICS_SCRIPT_URL } from "./site.config.mjs";
+import { SITE_URL, SITE_NAME, LANGS, DOWNLOAD_URL, SUPPORT_EMAIL } from "./site.config.mjs";
 import { loadArticles } from "./lib/articles.mjs";
 import { LANG_META, UI } from "./lib/i18n.mjs";
 import { marked } from "marked";
@@ -14,9 +14,6 @@ const { render, SEO: seo } = await import(pathToFileURL(path.resolve("dist-serve
 const urlFor = (l) => `${SITE_URL}/${l === "en" ? "" : l + "/"}`;
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
 const ogImage = `${SITE_URL}/og-image.jpg`;
-const analyticsHead = ANALYTICS_DOMAIN && ANALYTICS_SCRIPT_URL
-  ? `<script defer data-domain="${esc(ANALYTICS_DOMAIN)}" src="${esc(ANALYTICS_SCRIPT_URL)}"></script>`
-  : "";
 
 function head(lang) {
   const { title, description, locale } = seo[lang];
@@ -34,7 +31,15 @@ function head(lang) {
         description: seo.en.description,
         url: `${SITE_URL}/`,
         image: ogImage,
-        offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+        isAccessibleForFree: true,
+        downloadUrl: DOWNLOAD_URL,
+        screenshot: ogImage,
+        softwareRequirements: "Windows 10 or Windows 11 (64-bit), Microsoft WebView2 runtime",
+        featureList: ["Sunburst, treemap and file list views", "Large file finder", "Duplicate file detection by SHA-256", "Power search", "Offline: no account, no telemetry, no administrator rights"],
+        offers: [
+          { "@type": "Offer", name: "Windows Clean (free)", price: "0", priceCurrency: "USD", availability: "https://schema.org/InStock" },
+          { "@type": "Offer", name: "Windows Clean Pro (one-time payment)", price: "12.99", priceCurrency: "USD", availability: "https://schema.org/InStock" },
+        ],
       },
     ],
   };
@@ -61,7 +66,6 @@ function head(lang) {
     <meta name="twitter:image" content="${ogImage}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    ${analyticsHead}
     <script type="application/ld+json">${JSON.stringify(ld)}</script>`;
 }
 
@@ -113,7 +117,7 @@ function switcher(lang, alts) {
   return `<details class="lang"><summary aria-label="${esc(UI[lang].language)}"><span class="code">${LANG_META[lang].code}</span><span class="nm">${LANG_META[lang].name}</span><span class="car">▾</span></summary><ul>${items}</ul></details>`;
 }
 
-function page({ lang, title, description, rest, alts, body, jsonld, ogType = "website", ogImage: img = ogImage }) {
+function page({ lang, title, description, rest, alts, body, jsonld, ogType = "website", ogImage: img = ogImage, article }) {
   const t = UI[lang];
   const canonical = U(lang, rest);
   const hre = LANGS.filter((l) => alts[l] !== undefined).map((l) => `<link rel="alternate" hreflang="${l}" href="${U(l, alts[l])}">`).join("\n  ");
@@ -140,12 +144,18 @@ function page({ lang, title, description, rest, alts, body, jsonld, ogType = "we
   <meta property="og:url" content="${canonical}">
   <meta property="og:image" content="${img}">
   <meta property="og:locale" content="${LANG_META[lang].og}">
+  <meta property="og:image:alt" content="${esc(title)}">${article ? `
+  <meta property="article:published_time" content="${article.date}">
+  <meta property="article:modified_time" content="${article.updated}">
+  <meta property="article:section" content="${esc(article.category)}">` : ""}
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="${esc(title)}">
+  <meta name="twitter:description" content="${esc(description)}">
+  <meta name="twitter:image" content="${img}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Instrument+Serif&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="${BASE}blog.css">
-  ${analyticsHead}
   <script type="application/ld+json">${JSON.stringify(jsonld)}</script>
 </head>
 <body>
@@ -161,6 +171,20 @@ ${body}
 }
 
 const ctaFor = (l) => `<div class="cta"><strong>${esc(UI[l].ctaTitle)}</strong><p>${esc(UI[l].ctaText)}</p><a class="btn" href="${DOWNLOAD_URL}">${esc(UI[l].ctaBtn)}</a></div>`;
+// Internal links written as /articles/x/ in Markdown -> current language when that translation exists
+const localLinks = (html, lang) => html
+  .replace(/href="\/articles\/([^/"#]+)\/"/g, (m, slug) => {
+    const a = articles.find((z) => z.slug === slug);
+    if (!a) return m;
+    const l = lang === "en" || a.translations[lang] ? lang : "en";
+    return `href="${P(l, `articles/${slug}/`)}"`;
+  })
+  .replace(/href="\/faq\/"/g, () => `href="${P(navLang(lang, !!faqs[lang]), "faq/")}"`)
+  .replace(/href="\/"/g, () => `href="${P(lang)}"`);
+
+// 3 related articles in the same language: same category first, then newest
+const related = (a, lang) => articlesIn(lang).filter((z) => z.slug !== a.slug)
+  .sort((x, y) => (y.category === a.category) - (x.category === a.category) || (x.date < y.date ? 1 : -1)).slice(0, 3);
 const write = (rel, html) => { const f = path.join(dist, rel, "index.html"); fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, html); };
 
 // where each article / index / FAQ exists
@@ -171,29 +195,34 @@ const faqAlts = Object.fromEntries(LANGS.filter((l) => faqs[l]).map((l) => [l, "
 for (const a of articles) {
   const alts = articleAlts(a);
   for (const lang of Object.keys(alts)) {
-    const e = inLang(a, lang), t = UI[lang];
+    const e = inLang(a, lang), t = UI[lang], rel = related(a, lang);
     const url = U(lang, `articles/${a.slug}/`);
     const body = `  <main><article>
     <div class="crumbs"><a href="${P(lang)}">${t.home}</a> › <a href="${P(lang, "articles/")}">${t.articles}</a></div>
     <h1>${esc(e.title)}</h1>
-    <p class="meta"><span class="tag">${esc(e.category)}</span>${fmtDate(e.date, lang)} · ${t.readTime(e.minutes)}</p>
-    ${e.html}
+    <p class="meta"><span class="tag">${esc(e.category)}</span>${fmtDate(e.date, lang)} · ${t.readTime(e.minutes)}${e.updated && e.updated !== e.date ? ` · ${esc(t.updated)} ${fmtDate(e.updated, lang)}` : ""}</p>
+    ${e.toc && e.toc.length > 3 ? `<nav class="toc" aria-label="${esc(t.toc)}"><strong>${esc(t.toc)}</strong><ol>${e.toc.map((h) => `<li><a href="#${h.id}">${esc(h.text)}</a></li>`).join("")}</ol></nav>` : ""}
+    ${localLinks(e.html, lang)}
     ${ctaFor(lang)}
+    ${rel.length ? `<aside class="related"><h2>${esc(t.related)}</h2><div class="grid">${rel.map((r) => `<a class="card" href="${P(lang, `articles/${r.slug}/`)}"><span class="tag">${esc(r.category)}</span><h3>${esc(r.title)}</h3><p>${esc(r.description)}</p></a>`).join("")}</div></aside>` : ""}
   </article></main>`;
     const img = e.image ? abs(e.image) : ogImage;
     const jsonld = {
       "@context": "https://schema.org",
       "@graph": [
-        { "@type": "BlogPosting", headline: e.title, description: e.description, inLanguage: lang, datePublished: e.date, dateModified: e.date, mainEntityOfPage: url, image: img,
-          author: { "@type": "Organization", name: SITE_NAME },
+        { "@type": "BlogPosting", "@id": `${url}#article`, headline: e.title, description: e.description, inLanguage: lang, datePublished: e.date, dateModified: e.updated || e.date, mainEntityOfPage: { "@type": "WebPage", "@id": url }, url, image: img,
+          articleSection: e.category, wordCount: e.words, isPartOf: { "@id": `${SITE_URL}/#website` },
+          ...(e.toc?.length ? { about: { "@type": "Thing", name: e.title } } : {}),
+          author: { "@type": "Organization", name: SITE_NAME, url: `${SITE_URL}/` },
           publisher: { "@type": "Organization", name: SITE_NAME, logo: { "@type": "ImageObject", url: `${SITE_URL}/favicon.svg` } } },
         { "@type": "BreadcrumbList", itemListElement: [
           { "@type": "ListItem", position: 1, name: t.home, item: U(lang) },
           { "@type": "ListItem", position: 2, name: t.articles, item: U(lang, "articles/") },
           { "@type": "ListItem", position: 3, name: e.title, item: url } ] },
+        ...(e.faq?.length ? [{ "@type": "FAQPage", mainEntity: e.faq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) }] : []),
       ],
     };
-    write(P(lang, `articles/${a.slug}/`).slice(BASE.length), page({ lang, title: `${e.title} | ${SITE_NAME}`, description: e.description, rest: `articles/${a.slug}/`, alts, body, jsonld, ogType: "article", ogImage: img }));
+    write(P(lang, `articles/${a.slug}/`).slice(BASE.length), page({ lang, title: (e.title + SITE_NAME).length > 58 ? e.title : `${e.title} | ${SITE_NAME}`, description: e.description, rest: `articles/${a.slug}/`, alts, body, jsonld, ogType: "article", ogImage: img, article: e }));
   }
 }
 
@@ -207,7 +236,8 @@ for (const lang of LANGS.filter(hasArticles)) {
     ${cards}
     </div>
   </main>`;
-  const jsonld = { "@context": "https://schema.org", "@type": "CollectionPage", name: `${SITE_NAME} – ${t.articles}`, inLanguage: lang, url: U(lang, "articles/") };
+  const jsonld = { "@context": "https://schema.org", "@type": "CollectionPage", name: `${SITE_NAME} – ${t.articles}`, inLanguage: lang, url: U(lang, "articles/"),
+    mainEntity: { "@type": "ItemList", itemListElement: articlesIn(lang).map((e, i) => ({ "@type": "ListItem", position: i + 1, url: U(lang, `articles/${e.slug}/`), name: e.title })) } };
   write(P(lang, "articles/").slice(BASE.length), page({ lang, title: `${t.idxMetaTitle} | ${SITE_NAME}`, description: t.idxMetaDesc, rest: "articles/", alts: indexAlts, body, jsonld }));
 }
 
@@ -242,66 +272,6 @@ for (const lang of Object.keys(faqs)) {
   write(P(lang, "faq/").slice(BASE.length), page({ lang, title: `${t.faqMetaTitle} | ${SITE_NAME}`, description: t.faqMetaDesc, rest: "faq/", alts: faqAlts, body, jsonld }));
 }
 
-// ---------- Search-intent landing pages (English, intentionally useful rather than thin SEO pages) ----------
-const landingPages = [
-  {
-    slug: "windows-disk-space-analyzer",
-    title: "Windows Disk Space Analyzer: See What Is Using Your Drive",
-    description: "Use a Windows disk space analyzer to see large folders and files, investigate storage safely, and decide what to remove.",
-    h1: "See what is using space on your Windows drive",
-    intro: "When your C: drive is nearly full, the safest first step is to inspect it—not delete things at random. Windows Clean scans a drive or folder locally and presents the results as a treemap, sunburst, or sortable file list.",
-    sections: [
-      ["What a disk space analyzer helps you find", "Start with the largest folders, then drill into the files inside them. Look for old installers, downloads, exports, game libraries, backups, build outputs, and caches you recognize. A scan shows what is present; it does not remove files."],
-      ["Choose an action after you review", "Open or reveal an item in Explorer before taking action. Keep files you still need, move files to another drive when that makes sense, and use the Recycle Bin for removals so they can be restored if needed. Do not manually delete Windows system folders such as WinSxS."],
-    ],
-  },
-  {
-    slug: "find-large-files-windows",
-    title: "How to Find Large Files on Windows 10 and 11",
-    description: "A practical way to find large files on Windows 10 or 11, review them in Explorer, and free space without guessing.",
-    h1: "How to find large files on Windows",
-    intro: "Large files are often the fastest place to investigate when storage is low. Windows Clean lets you filter and sort a local scan by size, then open or reveal the results in Explorer.",
-    sections: [
-      ["A safer workflow", "Scan the drive or folder that is full. Sort by size, check the full path, and open or reveal the item to confirm what it is. Common candidates include downloaded installers, video exports, compressed archives, old backups, and project build folders."],
-      ["Avoid costly mistakes", "Size alone does not tell you whether a file is safe to delete. Do not remove files from Windows, Program Files, or folders you do not recognize just to recover space. If you choose to remove a personal file, Windows Clean asks for confirmation and uses the Recycle Bin."],
-    ],
-  },
-  {
-    slug: "free-up-disk-space-windows",
-    title: "How to Free Up Disk Space on Windows Safely",
-    description: "Free up disk space on Windows with a review-first process: identify large files, verify them, and use reversible cleanup.",
-    h1: "Free up disk space on Windows without guessing",
-    intro: "The best cleanup is deliberate: find what is using space, understand it, and choose a reversible action. Windows Clean is designed to make that review easier with local visualizations and file details.",
-    sections: [
-      ["Review before cleanup", "Use the treemap or file list to locate the biggest items. Check dates and paths, and keep anything you may need later. Move personal files to another drive or cloud backup before removing local copies."],
-      ["Protect Windows", "Windows folders can look large because of system files and hard links. Do not delete WinSxS, System32, or installer caches by hand. Use Windows' supported cleanup tools for system storage, and use Windows Clean to inspect and manage files you recognize."],
-    ],
-  },
-];
-
-const landingAlts = Object.fromEntries(landingPages.map((p) => [p.slug, { en: `${p.slug}/` }]));
-for (const item of landingPages) {
-  const body = `  <main><article>
-    <div class="crumbs"><a href="${P("en")}">Home</a> › ${esc(item.h1)}</div>
-    <h1>${esc(item.h1)}</h1>
-    <p class="meta">A practical Windows storage guide</p>
-    <p>${esc(item.intro)}</p>
-    ${item.sections.map(([heading, copy]) => `<h2>${esc(heading)}</h2><p>${esc(copy)}</p>`).join("\n    ")}
-    <h2>Use Windows Clean to inspect your storage</h2>
-    <p>Windows Clean is a free local disk space analyzer for Windows 10 and Windows 11. It has no account requirement and no telemetry. Scanning is read-only until you choose a file action.</p>
-    ${ctaFor("en")}
-  </article></main>`;
-  const url = U("en", `${item.slug}/`);
-  const jsonld = { "@context": "https://schema.org", "@graph": [
-    { "@type": "WebPage", name: item.title, description: item.description, url, inLanguage: "en" },
-    { "@type": "BreadcrumbList", itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: U("en") },
-      { "@type": "ListItem", position: 2, name: item.h1, item: url },
-    ] },
-  ] };
-  write(`${item.slug}/`, page({ lang: "en", title: `${item.title} | ${SITE_NAME}`, description: item.description, rest: `${item.slug}/`, alts: landingAlts[item.slug], body, jsonld }));
-}
-
 // ---------- llms.txt, RSS (English), sitemap, robots, 404 ----------
 fs.writeFileSync(path.join(dist, "llms.txt"), [
   `# ${SITE_NAME}`, "", `> ${seo.en.description}`, "",
@@ -309,14 +279,13 @@ fs.writeFileSync(path.join(dist, "llms.txt"), [
   `- [Home](${SITE_URL}/): what the app does, screenshots, free vs Pro`,
   `- [FAQ](${SITE_URL}/faq/): pricing, privacy, Windows support, SmartScreen, safe deletion`,
   `- [Articles](${SITE_URL}/articles/): guides on Windows disk space`,
-  ...landingPages.map((p) => `- [${p.title}](${SITE_URL}/${p.slug}/): ${p.description}`),
   `- Also available in: ${LANGS.filter((l) => l !== "en").map((l) => `${LANG_META[l].name} (${SITE_URL}/${l}/)`).join(", ")}`,
   "", "## Articles",
-  ...articles.map((a) => `- [${a.title}](${SITE_URL}/articles/${a.slug}/): ${a.description}`),
+  ...Object.entries(articles.reduce((m, a) => ((m[a.category] ||= []).push(a), m), {})).flatMap(([cat, list]) => [`### ${cat}`, ...list.map((a) => `- [${a.title}](${SITE_URL}/articles/${a.slug}/): ${a.description}`)]),
   "", "## Contact", `- ${SUPPORT_EMAIL}`, "",
 ].join("\n"));
 
-const rssItems = articles.map((a) => `    <item><title>${esc(a.title)}</title><link>${SITE_URL}/articles/${a.slug}/</link><guid>${SITE_URL}/articles/${a.slug}/</guid><pubDate>${new Date(a.date + "T00:00:00Z").toUTCString()}</pubDate><description>${esc(a.description)}</description></item>`).join("\n");
+const rssItems = articles.map((a) => `    <item><title>${esc(a.title)}</title><link>${SITE_URL}/articles/${a.slug}/</link><guid>${SITE_URL}/articles/${a.slug}/</guid><pubDate>${new Date(a.date + "T00:00:00Z").toUTCString()}</pubDate><category>${esc(a.category)}</category><description>${esc(a.description)}</description></item>`).join("\n");
 fs.writeFileSync(path.join(dist, "feed.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0"><channel>\n    <title>${SITE_NAME} articles</title><link>${SITE_URL}/articles/</link><description>Windows storage guides</description>\n${rssItems}\n</channel></rss>\n`);
 
 const today = new Date().toISOString().slice(0, 10);
@@ -328,11 +297,13 @@ const urls = [
   ...LANGS.map((l) => entry(U(l), homeAlts, today)),
   ...Object.keys(faqAlts).map((l) => entry(U(l, "faq/"), faqAlts, today)),
   ...Object.keys(indexAlts).map((l) => entry(U(l, "articles/"), indexAlts, articles[0]?.date)),
-  ...articles.flatMap((a) => { const al = articleAlts(a); return Object.keys(al).map((l) => entry(U(l, al[l]), al, inLang(a, l).date)); }),
-  ...landingPages.map((p) => entry(U("en", `${p.slug}/`), landingAlts[p.slug], today)),
+  ...articles.flatMap((a) => { const al = articleAlts(a); return Object.keys(al).map((l) => entry(U(l, al[l]), al, inLang(a, l).updated || inLang(a, l).date)); }),
 ];
 fs.writeFileSync(path.join(dist, "sitemap.xml"),
   `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${urls.join("\n")}\n</urlset>\n`);
 fs.writeFileSync(path.join(dist, "robots.txt"), `User-agent: *\nAllow: /\n\nSitemap: ${SITE_URL}/sitemap.xml\n`);
-fs.copyFileSync(path.join(dist, "index.html"), path.join(dist, "404.html"));
+// 404: same look as home, but never indexed and without a canonical pointing at the home page
+fs.writeFileSync(path.join(dist, "404.html"), fs.readFileSync(path.join(dist, "index.html"), "utf8")
+  .replace(/\s*<link rel="canonical"[^>]*>/, "").replace(/\s*<link rel="alternate" hreflang[^>]*>/g, "")
+  .replace(/<meta name="robots" content="[^"]*">/, '<meta name="robots" content="noindex,follow">'));
 console.log("Prerendered:", LANGS.join(", "), "| articles:", articles.length, "| FAQ languages:", Object.keys(faqs).join(", "));

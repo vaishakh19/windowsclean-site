@@ -1,66 +1,66 @@
 ---
-title: "How to safely delete the Windows.old folder"
-description: "Windows.old keeps your previous Windows version and can use many GB. When Windows removes it on its own and how to delete it safely."
-date: 2026-11-17
+title: "Windows.old folder: can you delete it, and how?"
+description: "Windows.old can use 10–30 GB after an upgrade. What it contains, when Windows removes it, and the safe way to delete it from Settings or Disk Cleanup."
+date: 2026-11-12
 category: Storage Tips
 ---
 
-After a major Windows upgrade you may find a new folder, `C:\Windows.old`, that can take up many gigabytes. It is legitimate, it is safe to remove once you no longer need it, and it should be removed with the right tool rather than by hand.
+After a big Windows upgrade, you may find a new folder called **Windows.old** on your C: drive, often 10 GB to 30 GB in size. It is a safety copy of your previous Windows installation. Here is what is in it and how to remove it properly.
 
-## What Windows.old is
+## What is Windows.old?
 
-When Windows installs a feature update or upgrades to a new version, it keeps your **previous Windows installation** in `Windows.old`. It contains the old system files, along with copies of the user profile data from the old install. Its purpose is to let you **go back** to the previous version if the upgrade causes problems.
+When Windows upgrades to a new version (for example from Windows 10 to 11, or a major feature update), it keeps your old system files in `C:\Windows.old`. It lets you **roll back** if the upgrade causes problems. It can also contain old user profile data from the previous setup.
 
-## When does Windows delete it?
+## Can I delete it?
 
-Windows removes `Windows.old` automatically about **10 days** after the upgrade on current Windows 10 and 11 releases. It may remove it sooner if the drive runs very low on space. If you have turned on [Storage Sense](/articles/storage-sense-vs-disk-cleanup/), cleanup can happen automatically.
+Yes, once you are sure you do not want to go back to the old version. After deletion:
 
-If it is older than that and still on your drive, something prevented cleanup, or you are looking at a folder left from a much older upgrade. Either way you can remove it yourself.
+- You **cannot roll back** to the previous Windows version from Settings.
+- Your current files, apps and settings are not affected.
 
-## Should you delete it?
+Windows normally removes the folder by itself after a set period (about 10 days on current versions). If your drive is tight on space, you can remove it earlier.
 
-Delete it if:
+## Check first for personal files
 
-- The new Windows version is working fine.
-- You have already checked that your files and apps are intact.
-- You need the space.
+Occasionally, files from an old profile end up in `Windows.old\Users`. Open the folder and look inside `Windows.old\Users\<name>\Documents`, `Desktop` and `Pictures` before you remove it. Copy anything you still need.
 
-Wait if:
+## How to delete Windows.old safely
 
-- You upgraded recently and are still deciding whether to roll back.
-- You aren't sure that your important files were migrated. Look in `Windows.old\Users\YourName` first and copy anything missing.
-
-**After deletion you can no longer roll back** to the previous version with the built-in option. A clean reinstall would be the only path back.
-
-## How to delete it (Windows 11 and 10)
+### Option 1: Settings (recommended)
 
 1. Open **Settings → System → Storage**.
-2. Choose **Temporary files** (it can take a moment to calculate).
+2. Click **Temporary files** (or **Cleanup recommendations** on Windows 11).
 3. Tick **Previous Windows installation(s)**.
 4. Click **Remove files**.
 
-### Disk Cleanup alternative
+### Option 2: Disk Cleanup
 
-1. Press **Win + R**, type `cleanmgr` and press Enter.
-2. Choose the C drive and click **Clean up system files**.
+1. Press **Start**, type `Disk Cleanup` and open it.
+2. Select your C: drive and click **Clean up system files**.
 3. Tick **Previous Windows installation(s)** and click **OK**.
 
-The system checks permissions and removes the folder correctly. It can take several minutes.
+### What not to do
 
-## Why not delete the folder in File Explorer?
+Do not press Delete on the folder in File Explorer. It has special permissions and usually refuses, and forcing it with ownership changes is unnecessary and risky. The two methods above handle it correctly.
 
-You'll usually be refused, because many files inside are protected and owned by the system. Forcing it with ownership-changing commands is possible but risky and unnecessary; the Settings and Disk Cleanup options are designed for this.
+## If the option is missing
 
-## If "Previous Windows installation" isn't listed
+The **Previous Windows installation(s)** line only appears when the folder exists and Windows has not already removed it. If you cannot see it, there is nothing to clean. Scan the drive to confirm, using a [disk space analyzer](/articles/sunburst-vs-treemap-vs-file-list/).
 
-That usually means it is already gone, or the folder is something else, for example a leftover from an unfinished upgrade. Look at the folder size before deciding anything. [A disk analyzer](/articles/best-disk-space-analyzers-windows/) shows how much space it really uses, so you know whether it is worth the trouble.
+## More ways to free space
 
-## Other large items after an upgrade
+Windows.old is only one of several large system items. Continue with the [full C: drive checklist](/articles/c-drive-full-windows-11/), check [hibernation and page files](/articles/hiberfil-sys-pagefile-sys-explained/), and read about the [WinSxS folder](/articles/why-is-winsxs-so-big/).
 
-Upgrades also leave behind **Windows Update Cleanup** files, which Storage settings can remove, and sometimes a `$WINDOWS.~BT` folder from the upgrade process. The component store `WinSxS` also looks large but is not safe to delete manually; see [why WinSxS is so big](/articles/why-is-winsxs-so-big/).
+## Frequently asked questions
 
-For the complete list of safe cleanups, see [C drive full? 10 safe ways to free space](/articles/c-drive-full-windows/).
+### How big is Windows.old?
 
-## The short version
+Usually between 10 and 30 GB, depending on your old installation and installed apps.
 
-`Windows.old` is your safety net for the last upgrade. Windows deletes it by itself after about 10 days; if you want the space sooner, remove it through **Settings → Storage → Temporary files**, not by deleting the folder yourself.
+### Will deleting Windows.old affect my programs?
+
+No. Installed programs and your current settings live in the new Windows installation.
+
+### Windows.old is gone but my drive is still full. Why?
+
+Other items may be taking the space. Check the [Recycle Bin](/articles/recycle-bin-disk-space/) and run a scan to see real folder sizes.

@@ -1,68 +1,74 @@
 ---
-title: "Gamer guide: reclaiming space from a huge game install"
-description: "Where Steam, Epic, Xbox and Battle.net store games and saves on Windows, how to check exact sizes before deleting, and how to free space safely."
+title: "Free up space from huge game installs (Steam, Epic, Xbox)"
+description: "Where large game installs, shader caches and save files live on Windows, how to see exact folder sizes, and how to reclaim space without losing saves."
 date: 2026-11-05
 category: Guides
 ---
 
-Modern games are huge, and a handful of installs can fill a 1 TB drive. Before you uninstall anything, find out which games take the most space, where their data actually lives, and which files must be kept.
+Modern games are enormous. A single title can use 100 GB or more, and a few installs will fill a 512 GB SSD. The tricky part is knowing what is safe to remove. Delete the wrong folder and you can lose your save files.
 
-## Where games install by default
+This guide shows where game data lives on Windows and how to free space without regretting it.
 
-| Launcher | Default location |
-| --- | --- |
-| **Steam** | `C:\Program Files (x86)\Steam\steamapps\common` |
-| **Epic Games** | `C:\Program Files\Epic Games` |
-| **Xbox app / Game Pass (PC)** | A folder you choose, often `C:\XboxGames`, or `C:\Program Files\WindowsApps` for older Store installs |
-| **Battle.net** | `C:\Program Files (x86)` or the path you chose |
-| **EA app / Ubisoft Connect** | Their own folders under `Program Files` |
+## Where games store their data
 
-Steam, Epic and others let you add other **library folders** on other drives, so your games may not be where you expect. Steam lists them under **Settings → Storage**.
+| Launcher | Default install location |
+|---|---|
+| Steam | `C:\Program Files (x86)\Steam\steamapps\common\` |
+| Epic Games Store | `C:\Program Files\Epic Games\` |
+| Xbox app / Game Pass (PC) | `C:\XboxGames\` (or the drive you chose) |
+| Battle.net | `C:\Program Files (x86)\` or a folder you picked |
 
-## Step 1: find which games are the biggest
+Your own install paths may differ, because many people choose another drive during installation. A [disk space scan](/articles/sunburst-vs-treemap-vs-file-list/) shows the exact folders and sizes, so you do not have to guess.
 
-Don't guess. A game's size in a launcher can leave out shader caches, mods and saves that live elsewhere. A [disk analyzer](/articles/best-disk-space-analyzers-windows/) such as [Windows Clean](/) shows the real size of each game folder in a treemap or sunburst, so a 90 GB install stands out immediately. The file list view is useful for checking the exact path before you act; see [Sunburst vs Treemap vs File List](/articles/sunburst-vs-treemap-vs-file-list/).
+## Why games use more space than the install size
 
-## Step 2: know where saves and settings live
+The install folder is only part of the story. Look for these as well:
 
-Uninstalling through a launcher usually keeps your saves, but not always, and deleting folders by hand can remove them. Common save locations:
+- **Shader caches.** Games and graphics drivers compile shaders and store them to avoid stutter. In Steam they live in `steamapps\shadercache\`. In Windows you can clear the **DirectX Shader Cache** under **Settings → System → Storage → Temporary files**.
+- **Downloads and updates.** Steam keeps partial files in `steamapps\downloading\` and `steamapps\temp\`. They can stay there after a failed update.
+- **Workshop and mods.** `steamapps\workshop\` can grow into tens of gigabytes if you subscribe to many mods.
+- **Recordings and screenshots.** Game DVR clips and captures are saved under your **Videos** folder (often `Videos\Captures`).
+- **Launcher caches.** Launchers keep their own cache folders under `AppData`. See [why your AppData folder is so big](/articles/appdata-folder-too-big/).
 
-- `Documents\My Games\<game>`
-- `Documents\<publisher>\<game>`
-- `AppData\Local\<game>` and `AppData\LocalLow\<publisher>`
-- `AppData\Roaming\<game>`
-- `Steam\userdata\<your ID>` for Steam cloud and local saves
-- `Saved Games` in your user folder
+## Where save files live (do not delete these by accident)
 
-Check whether the game has **cloud save** turned on in its launcher. If it does, your progress is stored online and can be restored on reinstall. If it doesn't, copy the save folder somewhere safe first. For more on the hidden `AppData` locations, see [Why is AppData so big?](/articles/appdata-folder-too-big/).
+Save games are tiny, but they are the one thing you cannot re-download. Common locations are:
 
-## Step 3: free space without losing progress
+- `C:\Users\<you>\Documents\My Games\`
+- `C:\Users\<you>\Saved Games\`
+- `C:\Users\<you>\AppData\Local\<GameName>\` and `AppData\Roaming\<GameName>\`
+- `Steam\userdata\<id>\` (Steam Cloud local copies)
 
-In order of safety:
+Uninstalling a game from its launcher usually leaves saves in place, but some games keep them inside the install folder. **Before you remove a game, check that its saves are backed up or in the cloud.**
 
-1. **Uninstall games you no longer play** from the launcher, not by deleting folders. You can reinstall later.
-2. **Move a game to another drive** instead of removing it. In Steam, open **Settings → Storage**, add a drive, then use the game's **Move install folder** option. Epic and others have similar options or a move-and-point method.
-3. **Clear shader caches.** Steam keeps compiled shaders in `steamapps\shadercache`, and Windows keeps a DirectX shader cache that you can clear in **Settings → System → Storage → Temporary files**. Games rebuild them, with a brief stutter the first time.
-4. **Delete old recordings and captures** in `Videos\Captures` and your GPU software's recording folder. They are often tens of gigabytes. See [how to find the biggest files](/articles/find-large-files-windows/).
-5. **Remove unused mods and texture packs** through the mod manager.
+## How to free space safely
 
-## What not to do
+1. **Scan the drive** that holds your games and open the treemap. The biggest rectangles are your biggest games.
+2. **List games by size** and decide which ones you have not played in months.
+3. **Uninstall through the launcher**, not by deleting folders. In Steam, right-click the game, choose **Manage → Uninstall**. In the Xbox app or Epic launcher, use their uninstall option. This also removes registry entries and keeps the library consistent.
+4. **Move instead of delete.** Steam can move an install to another drive: **Steam → Settings → Storage**, pick a drive, and use **Move** on a game. This is also the fix when your SSD is full but you have a second disk.
+5. **Clear caches last.** Empty the shader cache and leftover download folders after the big removals.
 
-- **Don't delete folders inside `WindowsApps`.** It is protected, and removing things by hand can break Store and Xbox games.
-- **Don't delete a game folder in Explorer** and call it uninstalled. The launcher will still think it's installed and may show errors or try to re-download.
-- **Don't clear `AppData` wholesale** hoping for space. You could delete saves and settings.
-- **Don't run "game booster" cleaners** that remove files you didn't review.
+## What not to delete
 
-## A simple routine
+- The `steamapps` folder itself. It holds every game and its metadata.
+- Anything inside `C:\Windows`, and the hidden `WindowsApps` folder where some Microsoft Store apps live. Remove those apps through Settings.
+- Save-game folders you have not backed up.
 
-1. Scan the drive and find the five biggest game folders.
-2. Ask of each: have I played this in the last six months?
-3. Uninstall or move the rest.
-4. Back up saves for anything you'd hate to lose.
-5. Empty the bin after the games still launch. See [Recycle Bin disk space](/articles/recycle-bin-disk-space/).
+## Check for duplicates too
 
-If space is still tight, the broader checklist in [C drive full? 10 safe ways to free space](/articles/c-drive-full-windows/) applies to gaming PCs too.
+If you copy game installers or mod packs between drives, you may be storing the same file twice. A [duplicate file finder](/articles/find-duplicate-files-windows/) confirms identical files by content, not by name.
 
-## The short version
+## Frequently asked questions
 
-Find the biggest installs first, protect your saves, and use the launcher to uninstall or move games instead of deleting folders yourself.
+### Can I delete the Steam shader cache?
+
+Yes. Steam rebuilds it. You may see short stutters the first time you launch each game afterwards.
+
+### Will uninstalling a game delete my saves?
+
+Often not, but it depends on the game. Check the save location above and back it up first.
+
+### How do I see which game uses the most space?
+
+Scan the install drive and open the treemap. The largest boxes inside `steamapps\common`, `Epic Games` or `XboxGames` are your largest games.
