@@ -222,7 +222,7 @@ for (const a of articles) {
         ...(e.faq?.length ? [{ "@type": "FAQPage", mainEntity: e.faq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) }] : []),
       ],
     };
-    write(P(lang, `articles/${a.slug}/`).slice(BASE.length), page({ lang, title: (e.title + SITE_NAME).length > 58 ? e.title : `${e.title} | ${SITE_NAME}`, description: e.description, rest: `articles/${a.slug}/`, alts, body, jsonld, ogType: "article", ogImage: img, article: e }));
+    write(P(lang, `articles/${a.slug}/`).slice(BASE.length), page({ lang, title: (`${e.title} | ${SITE_NAME}`).length > 58 ? e.title : `${e.title} | ${SITE_NAME}`, description: e.description, rest: `articles/${a.slug}/`, alts, body, jsonld, ogType: "article", ogImage: img, article: e }));
   }
 }
 
@@ -272,6 +272,66 @@ for (const lang of Object.keys(faqs)) {
   write(P(lang, "faq/").slice(BASE.length), page({ lang, title: `${t.faqMetaTitle} | ${SITE_NAME}`, description: t.faqMetaDesc, rest: "faq/", alts: faqAlts, body, jsonld }));
 }
 
+// ---------- Search-intent landing pages (English, intentionally useful rather than thin SEO pages) ----------
+const landingPages = [
+  {
+    slug: "windows-disk-space-analyzer",
+    title: "Windows Disk Space Analyzer: See What Is Using Your Drive",
+    description: "Use a Windows disk space analyzer to see large folders and files, investigate storage safely, and decide what to remove.",
+    h1: "See what is using space on your Windows drive",
+    intro: "When your C: drive is nearly full, the safest first step is to inspect it—not delete things at random. Windows Clean scans a drive or folder locally and presents the results as a treemap, sunburst, or sortable file list.",
+    sections: [
+      ["What a disk space analyzer helps you find", "Start with the largest folders, then drill into the files inside them. Look for old installers, downloads, exports, game libraries, backups, build outputs, and caches you recognize. A scan shows what is present; it does not remove files."],
+      ["Choose an action after you review", "Open or reveal an item in Explorer before taking action. Keep files you still need, move files to another drive when that makes sense, and use the Recycle Bin for removals so they can be restored if needed. Do not manually delete Windows system folders such as WinSxS."],
+    ],
+  },
+  {
+    slug: "find-large-files-windows",
+    title: "How to Find Large Files on Windows 10 and 11",
+    description: "A practical way to find large files on Windows 10 or 11, review them in Explorer, and free space without guessing.",
+    h1: "How to find large files on Windows",
+    intro: "Large files are often the fastest place to investigate when storage is low. Windows Clean lets you filter and sort a local scan by size, then open or reveal the results in Explorer.",
+    sections: [
+      ["A safer workflow", "Scan the drive or folder that is full. Sort by size, check the full path, and open or reveal the item to confirm what it is. Common candidates include downloaded installers, video exports, compressed archives, old backups, and project build folders."],
+      ["Avoid costly mistakes", "Size alone does not tell you whether a file is safe to delete. Do not remove files from Windows, Program Files, or folders you do not recognize just to recover space. If you choose to remove a personal file, Windows Clean asks for confirmation and uses the Recycle Bin."],
+    ],
+  },
+  {
+    slug: "free-up-disk-space-windows",
+    title: "How to Free Up Disk Space on Windows Safely",
+    description: "Free up disk space on Windows with a review-first process: identify large files, verify them, and use reversible cleanup.",
+    h1: "Free up disk space on Windows without guessing",
+    intro: "The best cleanup is deliberate: find what is using space, understand it, and choose a reversible action. Windows Clean is designed to make that review easier with local visualizations and file details.",
+    sections: [
+      ["Review before cleanup", "Use the treemap or file list to locate the biggest items. Check dates and paths, and keep anything you may need later. Move personal files to another drive or cloud backup before removing local copies."],
+      ["Protect Windows", "Windows folders can look large because of system files and hard links. Do not delete WinSxS, System32, or installer caches by hand. Use Windows' supported cleanup tools for system storage, and use Windows Clean to inspect and manage files you recognize."],
+    ],
+  },
+];
+
+const landingAlts = Object.fromEntries(landingPages.map((p) => [p.slug, { en: `${p.slug}/` }]));
+for (const item of landingPages) {
+  const body = `  <main><article>
+    <div class="crumbs"><a href="${P("en")}">Home</a> › ${esc(item.h1)}</div>
+    <h1>${esc(item.h1)}</h1>
+    <p class="meta">A practical Windows storage guide</p>
+    <p>${esc(item.intro)}</p>
+    ${item.sections.map(([heading, copy]) => `<h2>${esc(heading)}</h2><p>${esc(copy)}</p>`).join("\n    ")}
+    <h2>Use Windows Clean to inspect your storage</h2>
+    <p>Windows Clean is a free local disk space analyzer for Windows 10 and Windows 11. It has no account requirement and no telemetry. Scanning is read-only until you choose a file action.</p>
+    ${ctaFor("en")}
+  </article></main>`;
+  const url = U("en", `${item.slug}/`);
+  const jsonld = { "@context": "https://schema.org", "@graph": [
+    { "@type": "WebPage", name: item.title, description: item.description, url, inLanguage: "en" },
+    { "@type": "BreadcrumbList", itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: U("en") },
+      { "@type": "ListItem", position: 2, name: item.h1, item: url },
+    ] },
+  ] };
+  write(`${item.slug}/`, page({ lang: "en", title: `${item.title} | ${SITE_NAME}`, description: item.description, rest: `${item.slug}/`, alts: landingAlts[item.slug], body, jsonld }));
+}
+
 // ---------- llms.txt, RSS (English), sitemap, robots, 404 ----------
 fs.writeFileSync(path.join(dist, "llms.txt"), [
   `# ${SITE_NAME}`, "", `> ${seo.en.description}`, "",
@@ -279,6 +339,7 @@ fs.writeFileSync(path.join(dist, "llms.txt"), [
   `- [Home](${SITE_URL}/): what the app does, screenshots, free vs Pro`,
   `- [FAQ](${SITE_URL}/faq/): pricing, privacy, Windows support, SmartScreen, safe deletion`,
   `- [Articles](${SITE_URL}/articles/): guides on Windows disk space`,
+  ...landingPages.map((p) => `- [${p.title}](${SITE_URL}/${p.slug}/): ${p.description}`),
   `- Also available in: ${LANGS.filter((l) => l !== "en").map((l) => `${LANG_META[l].name} (${SITE_URL}/${l}/)`).join(", ")}`,
   "", "## Articles",
   ...Object.entries(articles.reduce((m, a) => ((m[a.category] ||= []).push(a), m), {})).flatMap(([cat, list]) => [`### ${cat}`, ...list.map((a) => `- [${a.title}](${SITE_URL}/articles/${a.slug}/): ${a.description}`)]),
@@ -294,6 +355,7 @@ const xlinks = (alts) => [...LANGS.filter((l) => alts[l] !== undefined).map((l) 
 const entry = (loc, alts, lastmod) => `  <url>\n    <loc>${loc}</loc>${lastmod ? `\n    <lastmod>${lastmod}</lastmod>` : ""}\n${xlinks(alts)}\n  </url>`;
 const homeAlts = Object.fromEntries(LANGS.map((l) => [l, ""]));
 const urls = [
+  ...landingPages.map((p) => entry(U("en", `${p.slug}/`), landingAlts[p.slug], today)),
   ...LANGS.map((l) => entry(U(l), homeAlts, today)),
   ...Object.keys(faqAlts).map((l) => entry(U(l, "faq/"), faqAlts, today)),
   ...Object.keys(indexAlts).map((l) => entry(U(l, "articles/"), indexAlts, articles[0]?.date)),
