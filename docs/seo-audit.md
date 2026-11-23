@@ -20,12 +20,14 @@ Business: downloadable Windows utility with free and paid editions, supported by
 
 ## Prioritized findings and actions
 
+0. **High — production deployment blocked by invalid JSON encoding (found during release).** Vercel rejected `4a12f14` and earlier deployments with `Invalid vercel.json file provided`. The file began with UTF-8 BOM bytes `EF BB BF`; strict `JSON.parse` also failed. Removed only the BOM, preserved all configuration values and the sitemap XML header, and added a strict parse/header check to the verifier. Deployment `6f42b4f` reached READY. This explains why already-built improvements were not live.
 1. **High — preserve live landing URLs before deployment.** `/windows-disk-space-analyzer/`, `/find-large-files-windows/`, and `/free-up-disk-space-windows/` are absent from the local generator. Restore their existing generator from history, including sitemap and llms.txt entries. Failure check: any URL fails to generate, disappears from sitemap or fails live HTTP 200. Monitor these URLs in Search Console after release.
 2. **Medium — live output lacks already-built SEO fixes.** Deploy the verified existing changes rather than reimplement them. The existing local 404 rule removes canonical/hreflang and sets noindex,follow. Failure check: live article metadata or 404 HTML still differs after deployment.
 3. **Medium — article heading hierarchy.** Some existing Markdown bodies contain an H1 in addition to the template's title. Normalize body H1 headings during rendering without editing original articles. Failure check: generated articles have more than one H1 or duplicate anchor IDs.
 4. **Medium — competing article intent (editorial decision deferred).** C-drive, AppData, restore-point and cleanup-tool clusters overlap. Preserve all articles and URLs; propose consolidations below. Search Console query/landing-page data is needed to choose survivors with confidence.
 5. **Medium — existing translation quality.** Several translations include multilingual placeholder headings and very short generic text. Record for a separately authorized editorial pass; do not rewrite them here.
 6. **Low — title suffix threshold.** Current check omits the three separator characters. Count the complete proposed title before deciding whether to append the brand.
+7. **Low — malformed heading slugs.** The Unicode character-class expression lacked its `u` flag, producing headings such as `p` and `section` instead of meaningful anchors. Added the flag; all generated anchor IDs remain unique. Article Markdown is unchanged.
 
 ## Proposed consolidation options (not implemented)
 
@@ -38,7 +40,27 @@ Business: downloadable Windows utility with free and paid editions, supported by
 
 ## Before / after
 
-Pending implementation and live verification. Do not interpret local checks as a successful deployment.
+Production code commit: `6f42b4fb26872793516a05cdc0d57f30701e56a8` on `main`. Vercel deployment `dpl_D5sgpDZ5neVheaV5EbdXPzHHH36t` reached READY. Re-audited the public custom domain after release, using the same technical checklist and a complete sitemap crawl (five concurrent GET requests, one-second interval between batches, robots checked first).
+
+| Check | Before: live site | After: live site |
+|---|---|---|
+| Sitemap URLs / HTTP 200 | 83 / 83 | 87 / 87 |
+| Correct single title, description, self-canonical | 83 / 83 | 87 / 87 |
+| Parseable JSON-LD | 83 page blocks | 87 page blocks |
+| Article pages with multiple H1s | 50 | 0 |
+| Article TOC / related cards | Absent in sampled pages | Present on all 69 article pages |
+| Three existing top-level landing pages | Live, but missing from local generator | Live, generated and listed in sitemap and llms.txt |
+| Unknown URL | HTTP 404, indexable metadata, homepage canonical/hreflang | HTTP 404, noindex,follow, no canonical/hreflang |
+| Sitemap Content-Type | application/xml | application/xml; charset=utf-8 |
+| Deployment | Configuration rejected | READY |
+
+All live hreflang targets are in the sitemap. The local verifier additionally checks every generated page's internal links and asset paths, per-article language alternates, sitemap lastmod values, heading ID uniqueness, related cards, JSON-LD and strict Vercel configuration parsing. Results: 88 HTML files including 404, 69 article pages, 87 sitemap URLs, 88 valid JSON-LD blocks, zero verification errors.
+
+`npm run build` passed. `npm run lint` completed with six existing warnings in unchanged React files (unused variables/import and Fast Refresh exports), no errors. Two pages were inspected in the browser at 390 × 844: the English analyzer comparison and German C-drive guide. TOC, comparison table and related cards fit within the viewport; neither page had horizontal document overflow. Existing mixed-language content remains a documented editorial issue.
+
+No articles or FAQ entries were added, removed, rewritten or merged in this pass. No redirects were introduced. `content/`, `public/download/` and `site.config.mjs` are unchanged; the only `vercel.json` change removes its BOM. The increased live URL count reflects existing repository content reaching production, not newly authored content.
+
+Limitations: this verifies crawlable output and implementation, not ranking improvements or Google indexing. Field performance, backlinks and Search Console outcomes remain unmeasured. Existing translation quality, competing search intents and product-claim verification require a separate editorial/product review.
 
 ## Article inventory before changes
 
