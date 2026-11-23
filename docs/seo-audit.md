@@ -91,3 +91,4 @@ Limitations: this verifies crawlable output and implementation, not ranking impr
 | gamer-guide-reclaim-game-space | Free up space from huge game installs (Steam, Epic, Xbox) | Guides | en,  |
 | sunburst-vs-treemap-vs-file-list | Sunburst vs treemap vs file list: which disk view to use | Guides | en,  |
 | recycle-bin-disk-space | Recycle Bin disk space: why deleted files still use storage | Storage Tips | en, de, es, fr, ja |
+`nURL preservation check: compared the exact 83-URL baseline with the new sitemap: zero lost URLs. Four pre-existing repository articles are now included in production: disk-cleanup-vs-storage-sense-vs-disk-analyzer, system-volume-information-restore-points, hiberfil-sys-pagefile-sys-explained, and c-drive-full-windows-11. Their overlap proposals remain deferred above.
