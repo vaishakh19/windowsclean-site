@@ -42,5 +42,25 @@
   {
     "q": "How do I contact support?",
     "a": "Email [vaishakhdesktop@gmail.com](mailto:vaishakhdesktop@gmail.com)."
+  },
+  {
+    "q": "How can I free OneDrive space without deleting cloud files?",
+    "a": "After checking that syncing has finished, use OneDrive's Free up space command. Keep essential offline files on your device. See [OneDrive Files On-Demand](/articles/onedrive-files-on-demand-free-up-space/)."
+  },
+  {
+    "q": "Can I delete files from C:\\Windows\\Installer?",
+    "a": "Do not manually remove MSI or MSP cache files: applications may need them for updates, repairs or removal. Follow the [Windows Installer folder guide](/articles/windows-installer-folder-too-big/) for supported alternatives."
+  },
+  {
+    "q": "Why is Docker or WSL still using space after cleanup?",
+    "a": "Free space inside Linux and the virtual disk's allocation on Windows are different measurements. Review [Docker and WSL storage](/articles/docker-wsl-disk-space-windows/) before changing a VHDX or removing volumes."
+  },
+  {
+    "q": "Can I clear browser cache without deleting passwords?",
+    "a": "Choose Cached images and files and review every other selected category. Follow the [Chrome and Edge cache steps](/articles/clear-chrome-edge-cache-windows/) rather than deleting a browser profile folder."
+  },
+  {
+    "q": "Why are Size and Size on disk different?",
+    "a": "Allocation units, compression, cloud placeholders and shared file data can affect the figures. See [Size versus Size on disk](/articles/size-vs-size-on-disk-windows/) before treating the difference as removable storage."
   }
 ]

@@ -30,5 +30,25 @@
   {
     "q": "Comment contacter le support ?",
     "a": "Écrivez à [vaishakhdesktop@gmail.com](mailto:vaishakhdesktop@gmail.com)."
+  },
+  {
+    "q": "Comment libérer de l’espace OneDrive sans supprimer les fichiers du cloud ?",
+    "a": "Vérifiez la fin de la synchronisation, puis choisissez Libérer de l’espace. Gardez localement les documents essentiels hors connexion. Consultez [Fichiers à la demande OneDrive](/articles/onedrive-files-on-demand-free-up-space/)."
+  },
+  {
+    "q": "Puis-je supprimer des fichiers dans C:\\Windows\\Installer ?",
+    "a": "Ne supprimez pas les MSI ou MSP manuellement : les applications peuvent en avoir besoin pour leur maintenance. Le [guide Windows Installer](/articles/windows-installer-folder-too-big/) propose des alternatives prises en charge."
+  },
+  {
+    "q": "Pourquoi Docker ou WSL garde-t-il de l’espace après nettoyage ?",
+    "a": "L’espace libre dans Linux et l’allocation du disque virtuel sous Windows sont distincts. Consultez [le stockage Docker et WSL](/articles/docker-wsl-disk-space-windows/) avant de modifier un VHDX ou supprimer un volume."
+  },
+  {
+    "q": "Peut-on vider le cache sans effacer les mots de passe ?",
+    "a": "Sélectionnez Images et fichiers en cache et vérifiez les autres catégories. Suivez les [étapes pour Chrome et Edge](/articles/clear-chrome-edge-cache-windows/) plutôt que de supprimer le dossier du profil."
+  },
+  {
+    "q": "Pourquoi taille et taille sur le disque diffèrent-elles ?",
+    "a": "Unités d’allocation, compression, espaces réservés du cloud et données partagées peuvent expliquer l’écart. Consultez [les différences de taille](/articles/size-vs-size-on-disk-windows/) avant de considérer cet espace comme supprimable."
   }
 ]
