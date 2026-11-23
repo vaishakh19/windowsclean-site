@@ -41,7 +41,11 @@ Visual limitation: a new native-browser review was attempted but stopped because
 
 ## Release verification
 
-Pending production deployment and HTTP checks.
+Content commit `75df3096c428e71e18f35cfdceb35e6dc6a705fb` deployed to production in Vercel deployment `dpl_4AyynZCDeg8nuvf71J4Ntu6R3Lxx`, which reached READY.
+
+The post-publication crawl checked the public custom domain, respecting its robots policy, with five simultaneous requests and a one-second delay between batches. All 112 sitemap URLs returned HTTP 200 with one title, description and correct canonical. Their JSON-LD parsed successfully. All 25 new article pages had one H1, complete hreflang, three FAQ entities, TOC and related cards. The sitemap continues to return `application/xml; charset=utf-8` and preserves all 87 URLs from the prior audit.
+
+A source comparison also confirmed that all 69 pre-existing article files are unchanged and each language FAQ retains its original answers, with exactly five additions.
 
 ## Measurement after publication
 
