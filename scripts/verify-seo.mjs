@@ -6,6 +6,8 @@ import { loadArticles } from '../lib/articles.mjs';
 import { SITE_URL } from '../site.config.mjs';
 
 const root = path.resolve('dist');
+const config = JSON.parse(fs.readFileSync('vercel.json', 'utf8'));
+assert.ok(config.headers.some(rule => rule.source === '/sitemap.xml' && rule.headers.some(h => h.key === 'Content-Type' && h.value.startsWith('application/xml'))), 'Sitemap XML header');
 const files = fs.readdirSync(root, { recursive: true }).filter(f => f.endsWith('.html'));
 const sitemap = fs.readFileSync(path.join(root, 'sitemap.xml'), 'utf8');
 const locations = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1]);
